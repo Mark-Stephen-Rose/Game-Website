@@ -160,7 +160,7 @@ const GAMES = {
   sudoku: {
     title: "Sudoku",
     css: "Style/sudoku.css",
-    scripts: ["JS/sudoku.js", "JS/theme.js"],
+    scripts: ["JS/sudoku.js"],
     render: () => `
 <!-- LEFT PANEL -->
 <div class="side left">
@@ -229,7 +229,7 @@ const GAMES = {
   checkers: {
     title: "Checkers",
     css: "Style/checkers.css",
-    scripts: ["JS/checkers.js", "JS/theme.js"],
+    scripts: ["JS/checkers.js"],
     render: () => `
 <!-- LEFT PLAYER PANEL -->
 <div class="side left">
@@ -287,7 +287,7 @@ const GAMES = {
   chess: {
     title: "Chess",
     css: "Style/chess.css",
-    scripts: ["JS/chess.js", "JS/theme.js"],
+    scripts: ["JS/chess.js"],
     render: () => `
 <!-- PRE-GAME SETUP MODAL -->
 <div class="setup-overlay" id="setup-overlay">
