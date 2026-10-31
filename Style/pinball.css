@@ -1,0 +1,533 @@
+/* ============================================================
+   PINBALL — Full Arcade Cabinet Theme
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── Arcade colour tokens ─────────────────────────────────── */
+:root {
+  --neon-yellow:  #FFE600;
+  --neon-pink:    #FF2D78;
+  --neon-cyan:    #00F5FF;
+  --neon-green:   #39FF14;
+  --neon-orange:  #FF6B00;
+  --neon-purple:  #BF00FF;
+  --cabinet-dark: #0A0A0F;
+  --cabinet-mid:  #0F0F1A;
+  --cabinet-edge: #1A1A2E;
+  --panel-bg:     #0D0D1A;
+  --panel-border: #1E1E3A;
+  --text-bright:  #F0F0FF;
+  --text-dim:     #6060A0;
+  --display-bg:   #020208;
+  --sans:         'Orbitron', 'Share Tech Mono', monospace;
+  --mono:         'Share Tech Mono', monospace;
+  --radius:       4px;
+  --radius-lg:    8px;
+}
+
+/* ── Scanlines overlay (applied to whole page) ────────────── */
+html {
+  height: 100%;
+  background: var(--cabinet-dark);
+}
+html::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.18) 2px,
+    rgba(0,0,0,0.18) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+body {
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--sans);
+  background: var(--cabinet-dark);
+  color: var(--text-bright);
+}
+
+/* ── Main wrap ────────────────────────────────────────────── */
+.pb-wrap {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(255,230,0,0.04) 0%, transparent 60%),
+    var(--cabinet-dark);
+}
+
+/* ── Header / Marquee ─────────────────────────────────────── */
+.t-header {
+  position: relative;
+  z-index: 50;
+  background: var(--cabinet-edge);
+  border-bottom: 2px solid var(--neon-yellow);
+  box-shadow: 0 0 20px rgba(255,230,0,0.35), 0 2px 40px rgba(255,230,0,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  height: 52px;
+  flex-shrink: 0;
+}
+
+/* Marquee glow pulse */
+.t-header::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(255,230,0,0.04) 20%,
+    rgba(255,230,0,0.08) 50%,
+    rgba(255,230,0,0.04) 80%,
+    transparent 100%
+  );
+  animation: marquee-sweep 3s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+@keyframes marquee-sweep {
+  from { opacity: 0.4; }
+  to   { opacity: 1; }
+}
+
+.t-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  text-decoration: none;
+  transition: color 0.2s, text-shadow 0.2s;
+  min-width: 80px;
+  font-family: var(--mono);
+}
+.t-back:hover {
+  color: var(--neon-cyan);
+  text-shadow: 0 0 8px var(--neon-cyan);
+}
+
+.t-title-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.t-eyebrow {
+  font-size: 0.42rem;
+  font-weight: 400;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--neon-orange);
+  font-family: var(--mono);
+}
+
+.t-title {
+  font-family: var(--sans);
+  font-size: 1.4rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--neon-yellow);
+  text-shadow:
+    0 0 10px var(--neon-yellow),
+    0 0 30px rgba(255,230,0,0.5),
+    0 0 60px rgba(255,230,0,0.2);
+  animation: title-flicker 8s ease-in-out infinite;
+}
+@keyframes title-flicker {
+  0%,95%,100% { opacity: 1; }
+  96%          { opacity: 0.85; }
+  97%          { opacity: 1; }
+  98%          { opacity: 0.7; }
+  99%          { opacity: 1; }
+}
+
+.t-header-spacer { min-width: 80px; }
+
+/* ── Layout ───────────────────────────────────────────────── */
+.t-layout {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  overflow: hidden;
+}
+
+/* ── Side panels ──────────────────────────────────────────── */
+.t-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 108px;
+  flex-shrink: 0;
+}
+
+/* Stat displays — like a real arcade score panel */
+.stat-block {
+  background: var(--display-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius);
+  padding: 0.5rem 0.6rem 0.55rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+/* CRT-style inner glow */
+.stat-block::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 30%, rgba(255,230,0,0.04), transparent 70%);
+  pointer-events: none;
+}
+
+.stat-label {
+  font-size: 0.42rem;
+  font-weight: 400;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--neon-orange);
+  margin-bottom: 0.2rem;
+  font-family: var(--mono);
+}
+
+.stat-value {
+  font-family: var(--sans);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--neon-yellow);
+  letter-spacing: 0.04em;
+  line-height: 1;
+  word-break: break-all;
+  text-shadow: 0 0 8px rgba(255,230,0,0.5);
+}
+.stat-value.lit {
+  color: var(--neon-cyan);
+  text-shadow: 0 0 12px var(--neon-cyan);
+}
+
+/* ── Mode display ─────────────────────────────────────────── */
+.mode-block {
+  background: var(--display-bg);
+  border: 1px solid var(--neon-pink);
+  border-radius: var(--radius);
+  padding: 0.55rem 0.6rem;
+  text-align: center;
+  box-shadow: 0 0 12px rgba(255,45,120,0.25), inset 0 0 8px rgba(255,45,120,0.06);
+}
+
+.mode-name {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--neon-pink);
+  text-shadow: 0 0 10px var(--neon-pink);
+  font-family: var(--sans);
+}
+
+/* ── Target lights ────────────────────────────────────────── */
+.target-block {
+  background: var(--display-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius);
+  padding: 0.55rem 0.6rem;
+  text-align: center;
+}
+
+.target-lights {
+  display: flex;
+  justify-content: center;
+  gap: 0.35rem;
+  margin-top: 0.3rem;
+}
+
+.tl {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #0d0d0d;
+  border: 1px solid #2a2a4a;
+  transition: background 0.08s, box-shadow 0.08s;
+}
+.tl.on {
+  background: var(--neon-yellow);
+  border-color: var(--neon-yellow);
+  box-shadow: 0 0 6px var(--neon-yellow), 0 0 14px rgba(255,230,0,0.6);
+}
+
+/* ── Control buttons ──────────────────────────────────────── */
+.ctrl-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.t-ctrl-btn {
+  width: 100%;
+  padding: 0.45rem 0.6rem;
+  font-family: var(--sans);
+  font-size: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: var(--cabinet-edge);
+  color: var(--text-dim);
+  border: 1px solid #2a2a4a;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.t-ctrl-btn:hover {
+  color: var(--neon-cyan);
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 10px rgba(0,245,255,0.25);
+  background: rgba(0,245,255,0.04);
+}
+
+/* ── Key hints ────────────────────────────────────────────── */
+.key-hint {
+  background: var(--display-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius);
+  padding: 0.55rem 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.kh-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.46rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: var(--text-dim);
+  font-family: var(--mono);
+}
+
+kbd {
+  font-family: var(--mono);
+  font-size: 0.44rem;
+  background: var(--cabinet-edge);
+  border: 1px solid #2a2a4a;
+  border-radius: 3px;
+  padding: 0.1rem 0.28rem;
+  color: var(--neon-cyan);
+}
+
+/* ── Board / Canvas ───────────────────────────────────────── */
+.t-board-wrap {
+  position: relative;
+  flex-shrink: 0;
+  --board-h: min(calc(100vh - 52px - 1.5rem), 640px);
+  --board-w: calc(var(--board-h) * 0.575);
+  height: var(--board-h);
+  width: var(--board-w);
+}
+
+#board {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-lg);
+  /* Arcade cabinet glass bezel */
+  border: 3px solid #2a2a3a;
+  box-shadow:
+    0 0 0 1px #0a0a0f,
+    0 0 0 5px #1a1a2a,
+    0 0 40px rgba(255,230,0,0.15),
+    0 0 80px rgba(0,245,255,0.08),
+    inset 0 0 30px rgba(0,0,0,0.8);
+  background: #050510;
+  /* Slight glass warp effect */
+  filter: contrast(1.04) brightness(1.02);
+}
+
+/* ── Overlays ─────────────────────────────────────────────── */
+.t-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-lg);
+  background: rgba(2, 2, 12, 0.94);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  /* Overlay scanlines */
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 3px,
+      rgba(0,0,0,0.15) 3px,
+      rgba(0,0,0,0.15) 4px
+    ),
+    radial-gradient(ellipse at 50% 50%, rgba(255,230,0,0.04) 0%, transparent 70%);
+}
+.t-overlay.hidden { display: none; }
+
+.overlay-inner {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+}
+
+.overlay-title {
+  font-family: var(--sans);
+  font-size: 1.8rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--neon-yellow);
+  text-shadow:
+    0 0 12px var(--neon-yellow),
+    0 0 40px rgba(255,230,0,0.5),
+    0 0 80px rgba(255,230,0,0.2);
+  animation: overlay-pulse 1.8s ease-in-out infinite alternate;
+}
+@keyframes overlay-pulse {
+  from { text-shadow: 0 0 10px var(--neon-yellow), 0 0 30px rgba(255,230,0,0.4); }
+  to   { text-shadow: 0 0 20px var(--neon-yellow), 0 0 60px rgba(255,230,0,0.7), 0 0 100px rgba(255,230,0,0.3); }
+}
+
+.overlay-sub {
+  font-size: 0.62rem;
+  font-family: var(--mono);
+  color: #7070a0;
+  max-width: 210px;
+  line-height: 1.8;
+  letter-spacing: 0.06em;
+}
+
+.overlay-score {
+  font-size: 0.7rem;
+  font-weight: 700;
+  font-family: var(--mono);
+  color: var(--neon-cyan);
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 8px var(--neon-cyan);
+}
+
+.overlay-keys {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin-top: 0.1rem;
+}
+.overlay-keys span {
+  font-size: 0.52rem;
+  font-family: var(--mono);
+  color: #404070;
+  letter-spacing: 0.08em;
+}
+
+/* Arcade-style button */
+.t-btn {
+  padding: 0.75rem 2.2rem;
+  font-family: var(--sans);
+  font-size: 0.65rem;
+  font-weight: 900;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  background: transparent;
+  color: var(--neon-yellow);
+  border: 2px solid var(--neon-yellow);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.15s;
+  box-shadow:
+    0 0 12px rgba(255,230,0,0.3),
+    inset 0 0 12px rgba(255,230,0,0.05);
+  position: relative;
+  overflow: hidden;
+}
+.t-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--neon-yellow);
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.t-btn:hover {
+  color: #000;
+  box-shadow: 0 0 24px rgba(255,230,0,0.7), 0 0 60px rgba(255,230,0,0.3);
+}
+.t-btn:hover::before { opacity: 1; }
+.t-btn span, .t-btn { isolation: isolate; }
+.t-btn:hover { color: #000; }
+
+.t-exit {
+  font-size: 0.52rem;
+  font-weight: 400;
+  font-family: var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #303050;
+  text-decoration: none;
+  transition: color 0.2s, text-shadow 0.2s;
+}
+.t-exit:hover {
+  color: var(--neon-pink);
+  text-shadow: 0 0 8px var(--neon-pink);
+}
+
+/* ── Responsive ───────────────────────────────────────────── */
+@media (max-width: 800px) {
+  .t-layout {
+    flex-direction: column;
+    align-items: center;
+    padding: 0.5rem;
+    gap: 0.5rem;
+    overflow-y: auto;
+  }
+  .pb-wrap { overflow: auto; }
+  .t-panel {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    max-width: 400px;
+    gap: 0.4rem;
+  }
+  .t-panel-left  { order: 2; }
+  .t-panel-right { order: 3; }
+  .t-board-wrap  { order: 1; --board-h: 380px; }
+  .stat-block    { min-width: 55px; flex: 1; }
+  .key-hint      { display: none; }
+  .t-panel-right {
+    flex-direction: row;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .mode-block    { flex: 1; min-width: 80px; }
+  .target-block  { flex: 1; min-width: 80px; }
+  .ctrl-block    { flex-direction: row; flex: 1; }
+  .t-ctrl-btn    { flex: 1; }
+}

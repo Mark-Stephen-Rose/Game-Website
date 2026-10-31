@@ -1,0 +1,531 @@
+/* ============================================================
+   SOLITAIRE — Mark's Games Studio Edition
+   Uses Mark's Games' shared theme variables (--bg, --fg, --accent,
+   --sans, --serif, --card-bg, etc. — defined in Style/styles.css)
+   for all UI chrome so it follows the site's light/dark mode and
+   accent swatch. The felt table color and physical card-face color
+   are new, distinctly-named tokens (--sol-felt, --sol-card-face)
+   so they never collide with — or overwrite — the site's shared
+   --bg / --card-bg used by the persistent sidebar.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;1,400&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── Solitaire-only tokens ────────────────────────────────────
+   None of these names exist in Style/styles.css, so they can't
+   clash with or override the site's shared theme variables. */
+:root {
+  --sol-felt:       #2d6a4f;
+  --sol-felt-dark:  #1e4d38;
+
+  /* Physical card face — stays a warm off-white in both light and
+     dark mode (a card doesn't turn into a dark UI panel just
+     because dark mode is on), so this is intentionally its own
+     token rather than reusing the site's --card-bg. */
+  --sol-card-face:  #FFFFFF;
+
+  --red:            #C0392B;
+  --black:          #1A1A1A;
+
+  --shadow-card:    0 4px 14px rgba(0,0,0,0.13), 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-lift:    0 10px 28px rgba(0,0,0,0.2), 0 3px 8px rgba(0,0,0,0.12);
+
+  --card-w:         72px;
+  --card-h:         100px;
+  --card-radius:    7px;
+  --peek:           22px;  /* how much of a face-down card shows */
+  --fan:            28px;  /* how much of a face-up card shows */
+}
+
+[data-theme="dark"] {
+  --sol-felt:       #1a3d2b;
+  --sol-felt-dark:  #112a1e;
+  --sol-card-face:  #FDFAF4;
+  --shadow-card:    0 4px 16px rgba(0,0,0,0.5), 0 1px 4px rgba(0,0,0,0.4);
+  --shadow-lift:    0 12px 32px rgba(0,0,0,0.65), 0 4px 10px rgba(0,0,0,0.5);
+}
+
+/* ── Game wrap ────────────────────────────────────────────────
+   No longer `position: fixed; inset: 0` — that covered the whole
+   viewport, sidebar included. It now flows normally inside #app,
+   which the site's shared CSS already confines to the
+   main-content column (viewport width minus the sidebar). */
+.sol-wrap {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--sol-felt);
+  color: var(--fg);
+  overflow: hidden;
+  user-select: none;
+  font-family: var(--sans);
+}
+
+.sol-wrap.hidden { display: none; }
+
+/* Felt texture — scoped to this game's own container instead of
+   a fixed, viewport-covering body::before */
+.sol-wrap::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+  background-size: 200px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.sol-header, .sol-table { position: relative; z-index: 1; }
+
+/* ── Setup modal ──────────────────────────────────────────────
+   Also no longer fixed/inset:0 — it's the screen shown before
+   .sol-wrap appears, so it needs its own felt background and
+   full-height flow, but confined to #app the same way. */
+.sol-modal {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--sol-felt);
+  overflow: hidden;
+}
+
+.sol-modal.hidden { display: none; }
+
+.sol-modal::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+  background-size: 200px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.sol-modal-inner {
+  position: relative;
+  z-index: 1;
+  background: var(--sol-card-face);
+  border-radius: var(--radius-xl);
+  padding: 2.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.4rem;
+  width: 320px;
+  box-shadow: var(--shadow-lg);
+  animation: popIn 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.9) translateY(12px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.sol-eyebrow {
+  font-family: var(--sans);
+  font-size: 0.52rem;
+  font-weight: 700;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--fg-faint);
+}
+
+.sol-modal-title {
+  font-family: var(--serif);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--black);
+  letter-spacing: -0.02em;
+  text-align: center;
+}
+
+.sol-option-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.65rem;
+  width: 100%;
+}
+
+.sol-option-label {
+  font-family: var(--sans);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--fg-faint);
+}
+
+.sol-option-btns {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.sol-opt {
+  padding: 0.55rem 1.4rem;
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: #f0ede8;
+  color: var(--fg-muted);
+  border: 1.5px solid #e0ddd8;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+
+.sol-opt:hover { border-color: var(--accent); }
+
+.sol-opt.active {
+  background: var(--black);
+  color: #fff;
+  border-color: var(--black);
+}
+
+.sol-primary-btn {
+  padding: 0.8rem 2.5rem;
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.sol-primary-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+
+.sol-back-link {
+  font-family: var(--sans);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg-faint);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.sol-back-link:hover { color: var(--accent); }
+
+/* ── Header ───────────────────────────────────────────────── */
+.sol-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.25rem;
+  height: 52px;
+  background: rgba(10, 25, 17, 0.55);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  flex-shrink: 0;
+}
+
+.sol-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--sans);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.45);
+  text-decoration: none;
+  transition: color 0.2s;
+  min-width: 80px;
+}
+.sol-back:hover { color: rgba(255,255,255,0.85); }
+
+.sol-title-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.05rem;
+}
+
+.sol-eyebrow-sm {
+  font-family: var(--sans);
+  font-size: 0.45rem;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+}
+
+.sol-title {
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.9);
+  letter-spacing: -0.01em;
+}
+
+.sol-header-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 80px;
+  justify-content: flex-end;
+}
+
+.sol-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.05rem;
+}
+
+.sol-stat-label {
+  font-family: var(--sans);
+  font-size: 0.42rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+}
+
+.sol-stat-val {
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.8);
+  font-variant-numeric: tabular-nums;
+}
+
+.sol-icon-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  color: rgba(255,255,255,0.55);
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.sol-icon-btn:hover {
+  background: rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.9);
+}
+.sol-icon-btn:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+/* ── Table ────────────────────────────────────────────────── */
+.sol-table {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem 0.5rem;
+  overflow: hidden;
+}
+
+/* ── Top row ──────────────────────────────────────────────── */
+.sol-top-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.sol-spacer { flex: 1; }
+
+/* ── Zones (stock, waste, foundations) ───────────────────── */
+.sol-zone {
+  width: var(--card-w);
+  height: var(--card-h);
+  border-radius: var(--card-radius);
+  border: 1.5px dashed rgba(255,255,255,0.18);
+  position: relative;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.foundation-zone::before {
+  content: attr(data-suit);
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  color: rgba(255,255,255,0.15);
+  pointer-events: none;
+}
+
+/* ── Tableau ──────────────────────────────────────────────── */
+.sol-tableau {
+  display: flex;
+  gap: 0.5rem;
+  flex: 1;
+  min-height: 0;
+  align-items: flex-start;
+}
+
+.sol-col {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  min-height: var(--card-h);
+}
+
+/* ── Cards ────────────────────────────────────────────────── */
+.sol-card {
+  position: absolute;
+  width: var(--card-w);
+  border-radius: var(--card-radius);
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+  transition: box-shadow 0.15s;
+  touch-action: none;
+  background: var(--sol-card-face);
+  overflow: hidden;
+}
+
+.sol-card.face-down {
+  cursor: default;
+}
+
+.sol-card canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.sol-card.dragging {
+  box-shadow: var(--shadow-lift);
+  z-index: 1000 !important;
+  pointer-events: none;
+}
+
+.sol-card.can-drop {
+  outline: 2px solid rgba(255,255,255,0.5);
+}
+
+/* Stock empty — click to reset */
+.stock-zone.empty::after {
+  content: '↺';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  color: rgba(255,255,255,0.25);
+  pointer-events: none;
+}
+
+/* ── Drag ghost ───────────────────────────────────────────────
+   Stays position: fixed on purpose — it needs to track the
+   cursor across the whole screen during a drag. It's a small
+   card-sized element, not a full-viewport cover, so it doesn't
+   create the same sidebar-blocking problem as the modals above. */
+.drag-ghost {
+  position: fixed;
+  pointer-events: none;
+  z-index: 2000;
+  transform-origin: top left;
+}
+
+.drag-ghost.hidden { display: none; }
+
+/* ── Win overlay ──────────────────────────────────────────────
+   Now absolute within .sol-wrap (which has position: relative)
+   instead of fixed to the viewport, so it covers the game table
+   only — not the sidebar. */
+.sol-win-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 22, 15, 0.82);
+  backdrop-filter: blur(12px);
+}
+
+.sol-win-overlay.hidden { display: none; }
+
+#confettiCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.sol-win-inner {
+  position: relative;
+  z-index: 10;
+  background: var(--sol-card-face);
+  border-radius: var(--radius-xl);
+  padding: 2.5rem 2.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: var(--shadow-lg);
+  animation: popIn 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  text-align: center;
+}
+
+.sol-win-emoji { font-size: 3rem; line-height: 1; }
+
+.sol-win-title {
+  font-family: var(--serif);
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--black);
+  letter-spacing: -0.02em;
+}
+
+.sol-win-stats {
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--fg-muted);
+  letter-spacing: 0.04em;
+}
+
+/* ── Autocomplete pulse ───────────────────────────────────── */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0,200,100,0.4); }
+  50%       { box-shadow: 0 0 0 6px rgba(0,200,100,0); }
+}
+
+#btnAutoComplete {
+  color: rgba(80,220,120,0.8);
+  border-color: rgba(80,220,120,0.3);
+  animation: pulse-glow 1.8s ease infinite;
+}
+
+/* ── Responsive ───────────────────────────────────────────── */
+@media (max-width: 600px) {
+  :root {
+    --card-w: 44px;
+    --card-h: 62px;
+    --peek: 14px;
+    --fan:  18px;
+    --card-radius: 5px;
+  }
+  .sol-table { gap: 0.4rem; padding: 0.5rem 0.4rem; }
+  .sol-top-row { gap: 0.3rem; }
+  .sol-tableau { gap: 0.3rem; }
+}

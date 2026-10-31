@@ -1,0 +1,742 @@
+/* ============================================================
+   MARK'S SILLY GAMES — Theme
+   Matched to markrose.dev personal site: warm cream / sage & ochre,
+   Fraunces + Inter + IBM Plex Mono, hairline borders over heavy shadows.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── LIGHT MODE (default) ─────────────────────────────────── */
+
+:root {
+  --bg:          #FAF6EF;
+  --bg-warm:     #F3EDE1;
+  --card-bg:     #FFFFFF;
+  --fg:          #2B2620;
+  --fg-muted:    #6E655A;
+  --fg-faint:    #9C9284;
+  --border:      #E7DFD2;
+  --border-soft: #EFE8DA;
+
+  --accent:      #3F5D52;
+  --accent-2:    #B5702F;
+  --accent-warm: #B5702F;
+
+  --shadow-sm:   0 1px 3px rgba(43, 38, 32, 0.06);
+  --shadow-md:   0 6px 16px rgba(43, 38, 32, 0.08);
+  --shadow-lg:   0 14px 32px rgba(43, 38, 32, 0.10);
+
+  --sans:        'Inter', sans-serif;
+  --serif:       'Fraunces', 'Georgia', serif;
+  --mono:        'IBM Plex Mono', monospace;
+  --radius:      10px;
+  --radius-lg:   14px;
+  --radius-xl:   18px;
+
+  --sidebar-w:   260px;
+}
+
+/* ── DARK MODE ────────────────────────────────────────────── */
+
+[data-theme="dark"] {
+  --bg:          #1C1916;
+  --bg-warm:     #201C17;
+  --card-bg:     #242019;
+  --surface:     #2A251E;
+  --fg:          #EFE8DA;
+  --fg-muted:    #A69C8D;
+  --fg-faint:    #7A7164;
+  --border:      #3A342B;
+  --border-soft: #2F2A22;
+
+  --accent:      #6E9A8A;
+  --accent-dim:  #4E6F62;
+  --accent-glow: rgba(110, 154, 138, 0.12);
+  --accent-warm: #D69355;
+  --accent-2:    #D69355;
+
+  --shadow-sm:   0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md:   0 6px 16px rgba(0, 0, 0, 0.35);
+  --shadow-lg:   0 14px 32px rgba(0, 0, 0, 0.45);
+  --glow-accent: none;
+}
+
+/* ===== Accent presets =====
+   Each swatch sets a link/accent pair. Names describe the pairing,
+   not just a single hue. Matches the picker on markrose.dev. */
+:root, [data-accent="sage"]   { --accent: #3F5D52; --accent-2: #B5702F; --accent-warm: #B5702F; }
+[data-accent="indigo"]         { --accent: #3B4C6B; --accent-2: #C2492A; --accent-warm: #C2492A; }
+[data-accent="plum"]           { --accent: #5B3A52; --accent-2: #C99A2E; --accent-warm: #C99A2E; }
+[data-accent="forest"]         { --accent: #2E5339; --accent-2: #A65D2E; --accent-warm: #A65D2E; }
+[data-accent="slate"]          { --accent: #40515C; --accent-2: #B8863E; --accent-warm: #B8863E; }
+
+[data-theme="dark"][data-accent="sage"],
+[data-theme="dark"]:not([data-accent])    { --accent: #6E9A8A; --accent-2: #D69355; --accent-warm: #D69355; }
+[data-theme="dark"][data-accent="indigo"] { --accent: #7C93B8; --accent-2: #E0703F; --accent-warm: #E0703F; }
+[data-theme="dark"][data-accent="plum"]   { --accent: #A47C99; --accent-2: #E3B854; --accent-warm: #E3B854; }
+[data-theme="dark"][data-accent="forest"] { --accent: #6FA37D; --accent-2: #D08A55; --accent-warm: #D08A55; }
+[data-theme="dark"][data-accent="slate"]  { --accent: #8CA3B0; --accent-2: #D6A15E; --accent-warm: #D6A15E; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background-color: var(--bg);
+  color: var(--fg);
+  font-family: var(--sans);
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Flat warm backgrounds — no noise texture or gradient wash */
+:root body,
+[data-theme="dark"] body {
+  background-image: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, .game-card, .about-card { animation: none !important; transition: none !important; }
+}
+
+/* ── Hide legacy arcade elements ─────────────────────────── */
+.scanlines, .noise, .marquee-wrap { display: none !important; }
+
+/* ============================================================
+   APP SHELL / SIDEBAR
+   ============================================================ */
+
+#app-shell {
+  min-height: 100vh;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: var(--sidebar-w);
+  height: 100vh;
+  border-right: 1px solid var(--border);
+  background: var(--bg-warm);
+  overflow-y: hidden;
+  transition: background 0.3s ease, border-color 0.3s ease, transform 0.25s ease;
+  z-index: 40;
+}
+
+.sidebar-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.75rem 1.4rem 2rem;
+  min-height: 100%;
+}
+
+.sidebar-logo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  line-height: 1;
+  padding-bottom: 0.25rem;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.sidebar-logo:hover .logo-title { color: var(--accent); }
+
+.sidebar-logo .logo-mark {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--fg-faint);
+}
+
+.sidebar-logo .logo-title {
+  font-family: var(--serif);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--fg);
+  letter-spacing: -0.01em;
+  transition: color 0.2s;
+}
+
+.sidebar-section-label {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent-2);
+  margin-bottom: 0.7rem;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  border: none;
+  background: transparent;
+  text-align: left;
+  font-family: var(--sans);
+  font-size: 0.86rem;
+  font-weight: 500;
+  color: var(--fg-muted);
+  text-decoration: none;
+  padding: 0.6rem 0.7rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.sidebar-link-text { flex: 1; }
+
+.sidebar-link-count {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--fg-faint);
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 0.1rem 0.5rem;
+}
+
+.sidebar-link:hover {
+  background: var(--card-bg);
+  color: var(--fg);
+}
+
+.sidebar-link.active {
+  background: var(--card-bg);
+  color: var(--accent);
+  box-shadow: var(--shadow-sm);
+}
+
+.sidebar-link.active .sidebar-link-count {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.sidebar-link--ghost {
+  color: var(--fg-muted);
+}
+
+.sidebar-link--ghost svg { flex-shrink: 0; }
+
+.sidebar-link--ghost:hover { color: var(--accent); }
+
+.sidebar-divider {
+  height: 1px;
+  background: var(--border);
+}
+
+.sidebar-appearance { display: flex; flex-direction: column; }
+
+.sidebar-appearance .theme-switcher { margin-bottom: 1rem; }
+
+.sidebar-footer-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin-top: auto;
+}
+
+/* ── Theme switcher (shared component) ───────────────────── */
+
+.theme-switcher {
+  display: flex;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.theme-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  flex: 1;
+  padding: 0.4rem 0.6rem;
+  border: none;
+  border-radius: 100px;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  background: transparent;
+  color: var(--fg-muted);
+  transition: all 0.2s;
+}
+
+.theme-btn.active {
+  background: var(--card-bg);
+  color: var(--accent);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ── Accent swatches (shared component) ──────────────────── */
+
+.swatches {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.swatch {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  padding: 0;
+  box-shadow: 0 0 0 2px transparent;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.swatch:hover { transform: translateY(-2px); }
+
+.swatch[aria-pressed="true"] {
+  box-shadow: 0 0 0 2px var(--bg-warm), 0 0 0 4px var(--fg);
+}
+
+.swatch[data-accent="sage"]   { background: linear-gradient(135deg, #3F5D52 50%, #B5702F 50%); }
+.swatch[data-accent="indigo"] { background: linear-gradient(135deg, #3B4C6B 50%, #C2492A 50%); }
+.swatch[data-accent="plum"]   { background: linear-gradient(135deg, #5B3A52 50%, #C99A2E 50%); }
+.swatch[data-accent="forest"] { background: linear-gradient(135deg, #2E5339 50%, #A65D2E 50%); }
+.swatch[data-accent="slate"]  { background: linear-gradient(135deg, #40515C 50%, #B8863E 50%); }
+
+/* ── Mobile sidebar toggle + scrim ────────────────────────── */
+
+.sidebar-toggle {
+  display: none;
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 60;
+  width: 42px;
+  height: 42px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--card-bg);
+  color: var(--fg);
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+}
+
+.sidebar-scrim {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 45;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.sidebar-scrim-visible {
+  display: block;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (max-width: 900px) {
+  .sidebar {
+    transform: translateX(-100%);
+    box-shadow: var(--shadow-lg);
+  }
+  .sidebar.sidebar-open { transform: translateX(0); }
+  .sidebar-toggle { display: flex; }
+}
+
+/* ── Main content ─────────────────────────────────────────── */
+
+.main-content {
+  margin-left: var(--sidebar-w);
+  min-width: 0;
+}
+
+@media (max-width: 900px) {
+  .main-content { margin-left: 0; padding-top: 4.5rem; }
+}
+
+/* ============================================================
+   GAME PAGES — keep them inside the main-content column
+   ============================================================
+   The individual game stylesheets (tictactoe.css, chess.css,
+   tetris.css, etc.) were originally written as standalone
+   full-page apps and size their root containers using viewport
+   units (100vw / 100vh) or fixed positioning. Inside the SPA
+   shell that would draw right over the sidebar. These rules use
+   higher specificity (#page-game ...) plus !important so they
+   always win over whatever a given game's own stylesheet sets,
+   regardless of load order, keeping the sidebar visible and the
+   game confined to the space next to it. */
+
+#page-game {
+  width: 100%;
+  min-height: 100vh;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+#page-game .tetris-wrap,
+#page-game .pac-wrap,
+#page-game .pb-wrap,
+#page-game .table-wrap,
+#page-game .sol-wrap,
+#page-game .game-layout {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-height: 100vh !important;
+  box-sizing: border-box;
+}
+
+@media (max-width: 900px) {
+  #page-game { min-height: calc(100vh - 4.5rem); padding: 0 0.75rem; }
+}
+
+/* ── Hero ─────────────────────────────────────────────────── */
+
+.hero {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 4rem 2rem 3rem;
+}
+
+.hero-eyebrow {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent-2);
+  margin-bottom: 0.9rem;
+  display: block;
+}
+
+.hero-title {
+  font-family: var(--serif);
+  font-size: clamp(2.2rem, 5vw, 4rem);
+  font-weight: 600;
+  line-height: 1.05;
+  color: var(--fg);
+  letter-spacing: -0.01em;
+  margin-bottom: 1.1rem;
+}
+
+.hero-title em {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--accent);
+}
+
+.hero-sub {
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: var(--fg-muted);
+  max-width: 460px;
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+}
+
+.hero-divider {
+  width: 40px;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+/* ── Home "about" blurb (default view alongside the hero) ─── */
+
+.home-about-blurb {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 0 2rem 3rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 3rem;
+}
+
+.home-about-blurb .section-label {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent-2);
+  margin-bottom: 0.9rem;
+  display: block;
+}
+
+.home-about-blurb p {
+  font-size: 0.9rem;
+  color: var(--fg-muted);
+  line-height: 1.75;
+  max-width: 640px;
+  margin-bottom: 0.75rem;
+}
+
+.home-about-blurb p:last-child { margin-bottom: 0; }
+
+.home-about-blurb a {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* ── Game Gallery ─────────────────────────────────────────── */
+
+.game-grid {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 640px)  { .game-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1100px) { .game-grid { grid-template-columns: repeat(3, 1fr); } }
+
+/* ── Game Card ────────────────────────────────────────────── */
+
+.game-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--card-bg);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  opacity: 0;
+  transform: translateY(14px);
+  animation: card-in 0.5s ease forwards;
+  animation-delay: var(--delay, 0s);
+}
+
+@keyframes card-in {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.game-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent);
+  box-shadow: var(--shadow-md);
+}
+
+.game-card:active { transform: translateY(-1px); }
+
+.card-number {
+  position: absolute;
+  top: 1rem;
+  left: 1.2rem;
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  color: var(--fg-faint);
+  z-index: 2;
+}
+
+.card-img-wrap {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  background: var(--bg-warm);
+}
+
+.card-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s ease, filter 0.5s ease;
+  filter: saturate(0.92) brightness(0.98);
+}
+
+[data-theme="dark"] .card-img-wrap img {
+  filter: saturate(0.8) brightness(0.85);
+}
+
+.game-card:hover .card-img-wrap img {
+  transform: scale(1.03);
+  filter: saturate(1) brightness(1);
+}
+
+.card-img-wrap::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-warm));
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.game-card:hover .card-img-wrap::after { opacity: 1; }
+
+/* ── Accent tint on hover (all game cards) ───────────────────
+   A soft wash of the current accent color settles over each
+   card's image/icon on hover. Uses mix-blend-mode: color so it
+   tints the existing tones rather than flattening them, and it
+   automatically follows whichever accent swatch / light-dark
+   mode is active since it's built from the shared theme vars. */
+
+.card-img-wrap::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--accent), var(--accent-warm));
+  opacity: 0;
+  mix-blend-mode: color;
+  transition: opacity 0.35s ease;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.game-card:hover .card-img-wrap::before {
+  opacity: 0.4;
+}
+
+.card-shine { display: none; }
+
+.card-info {
+  padding: 1.4rem 1.5rem 1.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+/* Card image placeholders (chess, checkers, etc.) */
+.bj-card-img {
+  background: #0e2318;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bj-card-icon {
+  font-size: 4rem;
+  line-height: 1;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.35));
+}
+
+.card-title {
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--fg);
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  transition: color 0.2s;
+}
+
+.game-card:hover .card-title { color: var(--accent); }
+
+.card-desc {
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: var(--fg-muted);
+  line-height: 1.6;
+}
+
+.card-cta {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent-2);
+  margin-top: 0.3rem;
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.25s, transform 0.25s;
+}
+
+.game-card:hover .card-cta {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.arrow {
+  display: inline-block;
+  transition: transform 0.2s;
+}
+
+.game-card:hover .arrow { transform: translateX(3px); }
+
+/* ── Footer ───────────────────────────────────────────────── */
+
+.site-footer {
+  border-top: 1px solid var(--border);
+  padding: 2rem;
+  background: var(--bg);
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.footer-inner {
+  max-width: 1300px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  justify-content: space-between;
+}
+
+.footer-copy {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 0.85rem;
+  color: var(--fg-muted);
+}
+
+.footer-dot { color: var(--border); }
+
+.footer-note {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 400;
+  letter-spacing: 0.03em;
+  color: var(--fg-faint);
+}
+
+/* ── Responsive ───────────────────────────────────────────── */
+
+@media (max-width: 600px) {
+  .hero { padding: 2.5rem 1.25rem 2rem; }
+  .home-about-blurb { padding: 0 1.25rem 2rem; margin-bottom: 2rem; }
+  .game-grid { padding: 0 1.25rem; grid-template-columns: 1fr; }
+  .footer-inner { flex-direction: column; gap: 0.3rem; text-align: center; }
+  .footer-dot { display: none; }
+}

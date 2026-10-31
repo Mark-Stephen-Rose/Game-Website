@@ -1,0 +1,452 @@
+/* ============================================================
+   SUDOKU — Studio Edition
+   Matches Mark's Silly Games unified theme
+   Uses Mark's Games' shared theme variables (--bg, --fg, --accent,
+   --sans, --serif, etc. — defined in Style/styles.css) so the
+   game follows the site's active light/dark mode and accent
+   color. The grid lines / cell surface stay fixed per light/dark
+   mode (same treatment as the boards in the other games), but
+   selection, highlight, and "same number" states now use the
+   active accent instead of a hardcoded blue.
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+:root {
+  /* Board grid-line / divider colors — fixed per theme, not tied
+     to accent, same idea as the boards in the other games */
+  --sud-line:   #C0C8D8;
+  --sud-gap:    #6A7488;
+  --sud-cell:   var(--card-bg);
+  --sud-fg:     #0D0D0D;
+  --sud-given:  #0D0D0D;
+  --sud-user:   var(--accent);
+}
+
+[data-theme="dark"] {
+  --sud-line:   #3A404F;
+  --sud-gap:    #3A404F;
+  --sud-fg:     #F0F2F8;
+  --sud-given:  #F0F2F8;
+}
+
+/* ── GAME LAYOUT ────────────────────────────────────────────
+   router.js wraps this game's markup in a `.game-layout` grid
+   container sized to `1fr 600px 1fr` (see LAYOUT_SHIMS in
+   router.js) and stacks it to one column at 1160px — this file
+   no longer defines its own body grid. */
+
+/* ---------- SIDE PANELS ---------- */
+.side {
+  background: var(--bg-warm);
+  padding: 24px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: 16px;
+  overflow-y: auto;
+}
+.side.left  { border-right: 1px solid var(--border); }
+.side.right { border-left:  1px solid var(--border); }
+
+.stat-display {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px 12px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+.stat-label {
+  font-family: var(--sans);
+  font-size: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  margin-bottom: 6px;
+}
+.stat-value {
+  font-family: var(--serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+}
+
+/* ---------- GAME CONTAINER ---------- */
+.game-container {
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  gap: 6px;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+.game-container h1 {
+  font-family: var(--serif);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--fg);
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+#status {
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  min-height: 1.2em;
+  text-align: center;
+}
+/* Semantic status colors — fixed regardless of theme/accent */
+#status.success { color: #2E7D32; }
+[data-theme="dark"] #status.success { color: #66BB6A; }
+#status.error { color: #C62828; }
+[data-theme="dark"] #status.error { color: #EF5350; }
+
+/* ---------- SUDOKU BOARD ---------- */
+/*
+  Board uses a gap-based grid approach:
+  - 1px gaps between all cells (thin lines)
+  - 6px gaps between every 3rd cell (thick box borders)
+  - bg color of the board = the "line" color
+*/
+.sudoku-board {
+  --thin: 1px;
+  --thick: 6px;
+  --board-size: min(460px, 90vw, 54vh);
+
+  /* 9 cells + 2 thick dividers = 11 columns/rows */
+  display: grid;
+  grid-template-columns: repeat(3, 1fr) var(--thick) repeat(3, 1fr) var(--thick) repeat(3, 1fr);
+  grid-template-rows:    repeat(3, 1fr) var(--thick) repeat(3, 1fr) var(--thick) repeat(3, 1fr);
+  gap: var(--thin);
+  background: var(--sud-line);
+  border: 3px solid var(--sud-line);
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  width: var(--board-size);
+  height: var(--board-size);
+}
+
+/* Spacer divs — thick box-border color */
+.sudoku-gap {
+  background: var(--sud-gap);
+}
+
+.sudoku-cell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--sud-cell);
+  cursor: pointer;
+  font-family: var(--serif);
+  font-size: clamp(0.85rem, 2.2vw, 1.25rem);
+  font-weight: 700;
+  color: var(--sud-fg);
+  transition: background 0.1s, color 0.1s;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Given (pre-filled) cells */
+.sudoku-cell.given {
+  cursor: default;
+  color: var(--sud-given);
+}
+
+/* User-entered cells — now follows the active accent */
+.sudoku-cell.user-input {
+  color: var(--sud-user);
+}
+
+/* Selected cell */
+.sudoku-cell.selected {
+  background: color-mix(in srgb, var(--accent) 12%, var(--sud-cell));
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+  z-index: 2;
+}
+
+/* Highlighted (same row/col/box) */
+.sudoku-cell.highlight {
+  background: color-mix(in srgb, var(--accent) 5%, var(--sud-cell));
+}
+
+/* Same number highlight */
+.sudoku-cell.same-num {
+  background: color-mix(in srgb, var(--accent) 9%, var(--sud-cell));
+}
+
+/* Error cell — fixed semantic color, independent of theme/accent */
+.sudoku-cell.error {
+  color: #C62828 !important;
+  background: #FFEBEE !important;
+}
+[data-theme="dark"] .sudoku-cell.error {
+  color: #EF9A9A !important;
+  background: rgba(198, 40, 40, 0.15) !important;
+}
+
+/* Complete animation */
+@keyframes cellPop {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+.sudoku-cell.complete-anim {
+  animation: cellPop 0.3s ease;
+}
+
+/* ---------- NUMBER PAD ---------- */
+.numpad {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: 5px;
+  width: min(460px, 90vw, 54vh);
+}
+
+.numpad-btn {
+  font-family: var(--serif);
+  font-size: 0.9rem;
+  font-weight: 700;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 7px 0;
+  cursor: pointer;
+  color: var(--fg);
+  transition: background 0.12s, transform 0.1s, color 0.12s, border-color 0.12s;
+  box-shadow: var(--shadow-sm);
+}
+.numpad-btn:hover {
+  background: var(--bg-warm);
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+.numpad-btn:active {
+  transform: translateY(0);
+}
+.numpad-btn.erase {
+  font-family: var(--sans);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+/* ---------- CONTROLS ---------- */
+.controls {
+  display: flex;
+  gap: 10px;
+}
+
+.controls button, .mode-selector button {
+  font-family: var(--sans);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 7px 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  color: var(--fg);
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s, box-shadow 0.15s, border-color 0.15s;
+  box-shadow: var(--shadow-sm);
+}
+.controls button:hover {
+  background: var(--bg-warm);
+  border-color: var(--accent);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+/* ---------- MODE SELECTOR (right panel) ---------- */
+.mode-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px 12px;
+  box-shadow: var(--shadow-sm);
+}
+.mode-selector label {
+  font-family: var(--sans);
+  font-size: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+.mode-selector select {
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  font-weight: 500;
+  padding: 9px 12px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  color: var(--fg);
+  cursor: pointer;
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236E655A' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 30px;
+  transition: border-color 0.15s;
+}
+[data-theme="dark"] .mode-selector select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23A69C8D' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+}
+.mode-selector select:hover { border-color: var(--accent); }
+.mode-selector select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+/* ---------- ERRORS STAT ---------- */
+.errors-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px 12px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+.errors-pips {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+.error-pip {
+  width: 11px; height: 11px;
+  border-radius: 50%;
+  background: var(--border);
+  border: 1px solid rgba(0,0,0,0.08);
+  transition: background 0.2s, transform 0.15s;
+}
+[data-theme="dark"] .error-pip {
+  border-color: rgba(255,255,255,0.06);
+}
+/* Fixed semantic "mistake" red — independent of theme/accent */
+.error-pip.active {
+  background: #C62828;
+  border-color: transparent;
+  transform: scale(1.15);
+}
+[data-theme="dark"] .error-pip.active {
+  background: #EF5350;
+}
+
+/* ---------- VICTORY MODAL ────────────────────────────────────
+   Positioned within the game area, not the full viewport, so it
+   never covers the site's persistent sidebar. */
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--bg) 80%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  backdrop-filter: blur(4px);
+}
+.overlay.hidden { display: none; }
+
+.modal {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 40px 36px;
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+  max-width: 340px;
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.modal-icon {
+  font-size: 2.5rem;
+  line-height: 1;
+}
+.winner-text {
+  font-family: var(--serif);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--fg);
+}
+.winner-sub {
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  color: var(--fg-muted);
+  letter-spacing: 0.05em;
+}
+.modal-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+.modal-buttons button {
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 11px 20px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  color: var(--fg);
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s, border-color 0.15s;
+}
+.modal-buttons button:hover {
+  background: var(--bg-warm);
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+/* ---------- RESPONSIVE ────────────────────────────────────────
+   Breakpoint matches router.js's STACK_BREAKPOINT (1160px) —
+   the same point the .game-layout grid collapses to a single
+   column for every other game on the site. */
+@media (max-width: 1160px) {
+  .side {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 12px;
+    gap: 10px;
+  }
+  .side.left, .side.right {
+    border: none;
+    border-bottom: 1px solid var(--border);
+  }
+  .stat-display, .errors-display { min-width: 80px; }
+  .game-container { height: auto; min-height: 100vh; padding: 12px; overflow: visible; }
+}

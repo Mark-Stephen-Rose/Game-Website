@@ -1,0 +1,405 @@
+/* ============================================================
+   CONNECT FOUR — Studio Edition
+   Matte toy / sculptural plastic aesthetic
+   Tokens "drop" with a bounce to mimic gravity.
+   Uses Mark's Games' shared theme variables (--bg, --fg, --accent,
+   --sans, --serif, etc. — defined in Style/styles.css) so the
+   game always matches the site's current light/dark mode and
+   accent color, instead of carrying its own palette.
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+:root {
+  /* Board stays fixed — same color in every theme/accent combo,
+     so it never clashes with whichever accent pair is active. */
+  --c4-board:      #2C3E50;
+  --c4-hole:       var(--bg);
+
+  /* Players follow the site's active accent pair. --accent /
+     --accent-2 already swap correctly for light/dark mode and
+     for each accent swatch (sage, indigo, plum, forest, slate)
+     in Style/styles.css, so nothing else needs to change here
+     when the user picks a new theme. */
+  --c4-p1:         var(--accent);
+  --c4-p1-dark:    color-mix(in srgb, var(--accent) 75%, black);
+  --c4-p1-light:   color-mix(in srgb, var(--accent) 65%, white);
+
+  --c4-p2:         var(--accent-2);
+  --c4-p2-dark:    color-mix(in srgb, var(--accent-2) 75%, black);
+  --c4-p2-light:   color-mix(in srgb, var(--accent-2) 65%, white);
+}
+
+/* ---------- SIDE PANELS ---------- */
+.side {
+  background: var(--bg-warm);
+  border-right: 1px solid var(--border);
+  padding: 20px 12px;
+}
+
+.side.right {
+  border-right: none;
+  border-left: 1px solid var(--border);
+}
+
+.left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 52px;
+}
+
+.player-label { text-align: center; transition: all 0.3s ease; }
+
+.player-label .player-name {
+  font-family: var(--sans);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--fg-faint);
+  margin-bottom: 10px;
+}
+
+.player-label .player-score {
+  font-family: var(--serif);
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: var(--fg-faint);
+  line-height: 1;
+}
+
+.player-label.active .player-name { color: var(--accent); }
+.player-label.active.purple-player .player-score { color: var(--c4-p1); }
+.player-label.active.green-player  .player-score { color: var(--c4-p2); }
+.player-label.purple-player.active { color: var(--c4-p1); }
+.player-label.green-player.active  { color: var(--c4-p2); }
+
+/* Drop animation — the token falls from the top with a bounce */
+@keyframes tokenDrop {
+  0%   { transform: translateY(-420px); opacity: 0; }
+  5%   { opacity: 1; }
+  72%  { transform: translateY(0); animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1); }
+  82%  { transform: translateY(-10px); }
+  90%  { transform: translateY(0); }
+  95%  { transform: translateY(-4px); }
+  100% { transform: translateY(0); }
+}
+
+.token.dropping {
+  animation: tokenDrop 0.55s ease-in forwards;
+}
+
+@keyframes scoreIncrement {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.player-score.increment { animation: scoreIncrement 0.5s ease-out; }
+
+@keyframes boardFall {
+  0%   { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(100vh); opacity: 0; }
+}
+
+@keyframes winnerPopup {
+  0%   { transform: scale(0.85); opacity: 0; }
+  70%  { transform: scale(1.03); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.board.falling { animation: boardFall 0.7s ease-in forwards; }
+
+.modal.popup {
+  animation: winnerPopup 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  animation-delay: 0.4s;
+  opacity: 0;
+}
+
+.right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.mode-selector { text-align: center; }
+
+.mode-selector label {
+  display: block;
+  font-family: var(--sans);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  margin-bottom: 12px;
+}
+
+.mode-selector select {
+  padding: 10px 32px 10px 14px;
+  font-size: 0.82rem;
+  font-family: var(--sans);
+  font-weight: 500;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card-bg);
+  color: var(--fg);
+  cursor: pointer;
+  min-width: 180px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  transition: all 0.2s;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236E655A' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+}
+
+[data-theme="dark"] .mode-selector select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23A69C8D' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+
+.mode-selector select:hover { border-color: var(--accent); }
+.mode-selector select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent);
+}
+
+/* ---------- GAME CENTER ---------- */
+.game-container {
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  position: relative;
+  perspective: 1000px;
+  border-left: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+}
+
+.game-container h1 {
+  font-family: var(--serif);
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--fg);
+  margin: 8px 0 4px;
+  letter-spacing: -0.02em;
+}
+
+#status {
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  margin-bottom: 8px;
+}
+
+/* ---------- BOARD ---------- */
+.board {
+  display: grid;
+  grid-template-columns: repeat(7, 50px);
+  grid-template-rows: repeat(6, 50px);
+  gap: 6px;
+  margin: 20px 0;
+  position: relative;
+  background: var(--c4-board);
+  padding: 10px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255,255,255,0.06);
+  transform-style: preserve-3d;
+  flex-shrink: 0;
+}
+
+.cell {
+  width: 50px;
+  height: 50px;
+  background: var(--c4-hole);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+  position: relative;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.15), inset 0 1px 2px rgba(0,0,0,0.1);
+}
+
+/* Column hover highlight */
+.cell:hover { background: color-mix(in srgb, var(--fg) 4%, var(--c4-hole)); }
+
+.cell .token {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  position: absolute;
+}
+
+.token.purple {
+  background: radial-gradient(circle at 35% 35%, var(--c4-p1-light), var(--c4-p1) 50%, var(--c4-p1-dark));
+  box-shadow:
+    inset 0 -2px 6px rgba(0,0,0,0.25),
+    inset 0 2px 4px rgba(255,255,255,0.15),
+    0 2px 8px rgba(0,0,0,0.2);
+}
+
+.token.green {
+  background: radial-gradient(circle at 35% 35%, var(--c4-p2-light), var(--c4-p2) 50%, var(--c4-p2-dark));
+  box-shadow:
+    inset 0 -2px 6px rgba(0,0,0,0.25),
+    inset 0 2px 4px rgba(255,255,255,0.15),
+    0 2px 8px rgba(0,0,0,0.2);
+}
+
+.cell.winner { background: color-mix(in srgb, var(--accent) 18%, var(--c4-hole)); }
+.cell.disabled { pointer-events: none; }
+
+/* ---------- CONTROLS ---------- */
+.controls {
+  width: 100%;
+  max-width: 416px;
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+  flex-shrink: 0;
+}
+
+.controls button {
+  flex: 1;
+  padding: 12px 16px;
+  font-size: 0.65rem;
+  font-family: var(--sans);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--fg-muted);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s;
+}
+
+.controls button:hover {
+  color: var(--fg);
+  border-color: var(--accent);
+  box-shadow: var(--shadow-md);
+}
+
+/* ---------- MODAL ---------- */
+.overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  backdrop-filter: blur(12px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+
+.hidden { display: none; }
+
+.modal {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 2.5rem 3rem;
+  box-shadow: var(--shadow-lg);
+}
+
+.modal .winner-text {
+  font-family: var(--sans);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  margin-bottom: 14px;
+}
+
+.modal .winner-symbol {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin-bottom: 16px;
+}
+
+.modal .winner-symbol.purple {
+  background: radial-gradient(circle at 35% 35%, var(--c4-p1-light), var(--c4-p1));
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--c4-p1) 35%, transparent);
+}
+
+.modal .winner-symbol.green {
+  background: radial-gradient(circle at 35% 35%, var(--c4-p2-light), var(--c4-p2));
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--c4-p2) 35%, transparent);
+}
+
+.modal .draw-symbols {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  align-items: center;
+}
+
+.modal .draw-symbols .token { width: 50px; height: 50px; border-radius: 50%; }
+.modal .draw-symbols.hidden { display: none; }
+
+.modal-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.modal-buttons button {
+  font-size: 0.62rem;
+  font-family: var(--sans);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 10px 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card-bg);
+  color: var(--fg-muted);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s;
+}
+
+.modal-buttons button:hover {
+  color: var(--fg);
+  border-color: var(--accent);
+  box-shadow: var(--shadow-md);
+}
+
+/* ---------- RESPONSIVE ----------
+   Breakpoint matches the sidebar-aware stacking breakpoint that
+   router.js applies to .game-layout (900px of game content + the
+   260px sidebar ≈ 1160px), so the side panels restyle at the same
+   point the 3-column grid collapses to a single column. */
+
+@media (max-width: 1160px) {
+  .side { border: none; border-bottom: 1px solid var(--border); }
+  .side.right { border-top: 1px solid var(--border); border-bottom: none; }
+  .left { flex-direction: row; gap: 20px; padding: 16px; }
+  .right { padding: 16px; }
+  .game-container { border: none; }
+  .board { grid-template-columns: repeat(7, 44px); grid-template-rows: repeat(6, 44px); }
+  .cell { width: 44px; height: 44px; }
+  .cell .token { width: 37px; height: 37px; }
+}

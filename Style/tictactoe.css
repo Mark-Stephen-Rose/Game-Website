@@ -1,0 +1,405 @@
+/* ============================================================
+   TIC TAC TOE — Studio Edition
+   Tactile "pressed paper" aesthetic
+   Uses Mark's Games' shared theme variables (--bg, --fg, --accent,
+   --sans, --serif, etc. — defined in Style/styles.css) so the
+   game always matches the site's current light/dark mode and
+   accent color, instead of carrying its own palette.
+   Player X uses --accent, Player O uses --accent-2, so both the
+   scoreboard and the marks on the board always follow whichever
+   accent swatch is active.
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+:root {
+  /* Neumorphic "pressed paper" shadows — no direct site equivalent,
+     so these are scoped to this game only. Given theme-aware
+     values below for dark mode. */
+  --tt-raised:  5px 5px 12px rgba(0,0,0,0.08), -3px -3px 8px rgba(255,255,255,0.9);
+  --tt-pressed: inset 3px 3px 8px rgba(0,0,0,0.09), inset -2px -2px 5px rgba(255,255,255,0.85);
+}
+
+[data-theme="dark"] {
+  --tt-raised:  5px 5px 12px rgba(0,0,0,0.4), -3px -3px 8px rgba(255,255,255,0.03);
+  --tt-pressed: inset 3px 3px 8px rgba(0,0,0,0.5), inset -2px -2px 5px rgba(255,255,255,0.03);
+}
+
+/* ---------- SIDE PANELS ---------- */
+.side {
+  background: var(--bg-warm);
+  border-right: 1px solid var(--border);
+  padding: 20px 12px;
+}
+
+.side.right {
+  border-right: none;
+  border-left: 1px solid var(--border);
+}
+
+.left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 48px;
+}
+
+.player-label {
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.player-label .player-name {
+  font-weight: 700;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--fg-faint);
+  margin-bottom: 10px;
+}
+
+.player-label .player-score {
+  font-family: var(--serif);
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: var(--fg-faint);
+  line-height: 1;
+}
+
+/* Player X — tinted with the primary accent, muted until active */
+#player-x .player-score {
+  color: color-mix(in srgb, var(--accent) 55%, var(--fg-faint));
+}
+
+#player-x.active .player-name,
+#player-x.active .player-score {
+  color: var(--accent);
+}
+
+/* Player O — tinted with the secondary accent, muted until active */
+#player-o .player-score {
+  color: color-mix(in srgb, var(--accent-2) 55%, var(--fg-faint));
+}
+
+#player-o.active .player-name,
+#player-o.active .player-score {
+  color: var(--accent-2);
+}
+
+@keyframes scoreIncrement {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.player-score.increment { animation: scoreIncrement 0.5s ease-out; }
+
+@keyframes boardFall {
+  0%   { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(100vh); opacity: 0; }
+}
+
+@keyframes winnerPopup {
+  0%   { transform: scale(0.8); opacity: 0; }
+  70%  { transform: scale(1.03); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.board.falling { animation: boardFall 0.7s ease-in forwards; }
+
+.modal.popup {
+  animation: winnerPopup 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  animation-delay: 0.4s;
+  opacity: 0;
+}
+
+.right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.mode-selector { text-align: center; }
+
+.mode-selector label {
+  display: block;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  margin-bottom: 12px;
+}
+
+.mode-selector select {
+  padding: 10px 14px;
+  font-size: 0.82rem;
+  font-family: var(--sans);
+  font-weight: 500;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card-bg);
+  color: var(--fg);
+  cursor: pointer;
+  min-width: 180px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  transition: all 0.2s;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236E655A' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+}
+
+[data-theme="dark"] .mode-selector select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23A69C8D' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+
+.mode-selector select:hover {
+  border-color: var(--accent);
+}
+
+.mode-selector select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent);
+}
+
+/* ---------- GAME CENTER ---------- */
+.game-container {
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px;
+  position: relative;
+  border-left: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+}
+
+.game-container h1 {
+  font-family: var(--serif);
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--fg);
+  margin: 8px 0 4px;
+  letter-spacing: -0.02em;
+}
+
+#status {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  margin-bottom: 8px;
+}
+
+/* ---------- BOARD ---------- */
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, 100px);
+  grid-template-rows: repeat(3, 100px);
+  gap: 0;
+  margin: 20px 0;
+  position: relative;
+  background:
+    linear-gradient(to right, transparent calc(33.33% - 1px), var(--border) calc(33.33% - 1px), var(--border) calc(33.33% + 1px), transparent calc(33.33% + 1px),
+    transparent calc(66.66% - 1px), var(--border) calc(66.66% - 1px), var(--border) calc(66.66% + 1px), transparent calc(66.66% + 1px)),
+    linear-gradient(to bottom, transparent calc(33.33% - 1px), var(--border) calc(33.33% - 1px), var(--border) calc(33.33% + 1px), transparent calc(33.33% + 1px),
+    transparent calc(66.66% - 1px), var(--border) calc(66.66% - 1px), var(--border) calc(66.66% + 1px), transparent calc(66.66% + 1px));
+}
+
+.cell {
+  width: 100px;
+  height: 100px;
+  font-family: var(--serif);
+  font-size: 3rem;
+  font-weight: 700;
+  font-style: italic;
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--fg);
+  transition: background 0.15s, box-shadow 0.15s, color 0.15s;
+  user-select: none;
+  border-radius: 4px;
+}
+
+/* Marks pick up the matching player's accent color */
+.cell.mark-x { color: var(--accent); }
+.cell.mark-o { color: var(--accent-2); }
+
+.cell:hover:not(:disabled):not(.disabled) {
+  background: color-mix(in srgb, var(--fg) 3%, transparent);
+}
+
+.cell:active:not(:disabled):not(.disabled) {
+  background: color-mix(in srgb, var(--fg) 5%, transparent);
+  box-shadow: var(--tt-pressed);
+}
+
+/* Pressed state — stays after click */
+.cell.pressed {
+  box-shadow: var(--tt-pressed);
+  background: color-mix(in srgb, var(--fg) 4%, transparent);
+}
+
+.cell.winner.mark-x {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+.cell.winner.mark-o {
+  background: color-mix(in srgb, var(--accent-2) 12%, transparent);
+}
+
+.cell.disabled { pointer-events: none; }
+
+/* ---------- CONTROLS ---------- */
+.controls {
+  width: 100%;
+  max-width: 300px;
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.controls button {
+  flex: 1;
+  padding: 12px 16px;
+  font-size: 0.65rem;
+  font-family: var(--sans);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--fg-muted);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s;
+}
+
+.controls button:hover {
+  color: var(--fg);
+  border-color: var(--accent);
+  box-shadow: var(--shadow-md);
+}
+
+/* ---------- MODAL ---------- */
+.overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  backdrop-filter: blur(12px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+
+.hidden { display: none; }
+
+.modal {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 3rem 3.5rem;
+  box-shadow: var(--shadow-lg);
+}
+
+.modal .winner-text {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  margin-bottom: 12px;
+}
+
+.modal .winner-symbol {
+  font-family: var(--serif);
+  font-size: 6rem;
+  font-weight: 700;
+  font-style: italic;
+  color: var(--accent);
+  margin-bottom: 12px;
+  line-height: 1;
+}
+
+.modal .winner-symbol.mark-x { color: var(--accent); }
+.modal .winner-symbol.mark-o { color: var(--accent-2); }
+
+.modal .draw-symbols {
+  font-family: var(--serif);
+  font-size: 3rem;
+  font-style: italic;
+  font-weight: 700;
+  color: var(--fg-muted);
+  margin-bottom: 12px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.modal .draw-symbols .mark-x { color: var(--accent); }
+.modal .draw-symbols .mark-o { color: var(--accent-2); }
+
+.modal .draw-symbols.hidden { display: none; }
+
+.modal-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.modal-buttons button {
+  font-size: 0.62rem;
+  font-family: var(--sans);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 10px 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card-bg);
+  color: var(--fg-muted);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s;
+}
+
+.modal-buttons button:hover {
+  color: var(--fg);
+  border-color: var(--accent);
+  box-shadow: var(--shadow-md);
+}
+
+/* ---------- RESPONSIVE ----------
+   Breakpoint matches the sidebar-aware stacking breakpoint that
+   router.js applies to .game-layout (900px of game content + the
+   260px sidebar ≈ 1160px), so the side panels restyle at the same
+   point the 3-column grid collapses to a single column. */
+
+@media (max-width: 1160px) {
+  .side { border: none; border-bottom: 1px solid var(--border); }
+  .side.right { border-top: 1px solid var(--border); border-bottom: none; }
+  .left { flex-direction: row; gap: 20px; padding: 16px; }
+  .right { padding: 16px; }
+  .game-container { border: none; }
+  .board { grid-template-columns: repeat(3, 80px); grid-template-rows: repeat(3, 80px); }
+  .cell { width: 80px; height: 80px; font-size: 2.4rem; }
+}

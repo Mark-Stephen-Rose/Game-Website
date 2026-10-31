@@ -1,0 +1,342 @@
+/* ============================================================
+   MINESWEEPER — Studio Edition
+   Clean grid, muted jewel tones, flat-on-reveal aesthetic
+   Uses Mark's Games' shared theme variables (--bg, --fg, --accent,
+   --sans, --serif, etc. — defined in Style/styles.css) so the
+   game follows the site's active light/dark mode and accent
+   color. The router wraps this game's markup in a `.game-layout`
+   grid container and sizes it — this file no longer touches
+   html/body at all.
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+:root {
+  /* Tile states — not tied to accent, so the board reads the
+     same regardless of which accent swatch is active. Light/dark
+     variants are set below under [data-theme="dark"]. */
+  --tile-up:      var(--card-bg);
+  --tile-raised:  0 2px 4px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.05);
+  --tile-flat:    none;
+
+  /* Muted jewel number colors — fixed color-coding, independent
+     of theme/accent, same idea as Connect Four's fixed board. */
+  --n1: #2E4E8A;   /* Navy */
+  --n2: #5C6E2E;   /* Olive */
+  --n3: #9E3D40;   /* Muted Red */
+  --n4: #4A3670;   /* Plum */
+  --n5: #8A4A1E;   /* Sienna */
+  --n6: #1E6B5A;   /* Teal */
+  --n7: #2C3E50;   /* Charcoal */
+  --n8: #7A7A7A;   /* Stone */
+}
+
+/* ---------- SIDE PANELS ---------- */
+.side {
+  background: var(--bg-warm);
+  border-right: 1px solid var(--border);
+  padding: 20px 12px;
+}
+
+.side.right {
+  border-right: none;
+  border-left: 1px solid var(--border);
+}
+
+.left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+}
+
+.stat-display { text-align: center; }
+
+.stat-label {
+  font-family: var(--sans);
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--fg-faint);
+  margin-bottom: 8px;
+}
+
+.stat-value {
+  font-family: var(--serif);
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+}
+
+.stat-value.best-time {
+  font-size: 2rem;
+  color: var(--fg-muted);
+}
+
+.right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+}
+
+.mode-selector { text-align: center; }
+
+.mode-selector label {
+  display: block;
+  font-family: var(--sans);
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  margin-bottom: 10px;
+}
+
+.mode-selector select {
+  padding: 9px 32px 9px 12px;
+  font-size: 0.8rem;
+  font-family: var(--sans);
+  font-weight: 500;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card-bg);
+  color: var(--fg);
+  cursor: pointer;
+  min-width: 160px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  transition: all 0.2s;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236E655A' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+}
+
+[data-theme="dark"] .mode-selector select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23A69C8D' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+
+.mode-selector select:hover { border-color: var(--accent); }
+.mode-selector select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent);
+}
+
+.autocomplete-section { margin-top: 20px; text-align: center; }
+
+.autocomplete-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  font-family: var(--sans);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--fg-muted);
+  transition: color 0.2s;
+}
+
+.autocomplete-label:hover { color: var(--accent); }
+
+.autocomplete-label input[type="checkbox"] {
+  width: 16px; height: 16px;
+  cursor: pointer;
+  accent-color: var(--accent);
+}
+
+/* ---------- GAME CENTER ---------- */
+.game-container {
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  position: relative;
+  min-height: 100%;
+  border-left: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+}
+
+.game-container h1 {
+  font-family: var(--serif);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--fg);
+  margin: 5px 0 2px;
+  letter-spacing: -0.02em;
+}
+
+#status {
+  font-family: var(--sans);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  margin-bottom: 6px;
+}
+
+/* ---------- BOARD ---------- */
+.board-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px 0;
+  max-width: 100%;
+}
+
+.board {
+  display: grid;
+  gap: 2px;
+  background: var(--border);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 4px;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+.board.easy  { grid-template-columns: repeat(8, 35px);  grid-template-rows: repeat(8, 35px); }
+.board.medium{ grid-template-columns: repeat(16, 22px); grid-template-rows: repeat(16, 22px); }
+.board.hard  { grid-template-columns: repeat(30, 18px); grid-template-rows: repeat(16, 18px); }
+
+.cell {
+  background: var(--tile-up);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-family: var(--sans);
+  user-select: none;
+  cursor: pointer;
+  box-shadow: var(--tile-raised);
+  transition: box-shadow 0.12s, background 0.12s;
+}
+
+.board.easy   .cell { width: 35px; height: 35px; font-size: 14px; border-radius: 6px; }
+.board.medium .cell { width: 22px; height: 22px; font-size: 10px; border-radius: 3px; }
+.board.hard   .cell { width: 18px; height: 18px; font-size: 8px;  border-radius: 2px; }
+
+.cell:hover:not(.revealed):not(.flagged) {
+  background: color-mix(in srgb, var(--fg) 4%, var(--tile-up));
+}
+
+/* Revealed tile: flat, no shadow — "sinks into the page" */
+.cell.revealed {
+  background: var(--bg);
+  box-shadow: none;
+  cursor: default;
+}
+
+.cell.flagged {
+  background: var(--tile-up);
+  color: var(--accent);
+}
+
+.board.medium .cell.flagged { font-size: 12px; }
+.board.hard   .cell.flagged { font-size: 10px; }
+
+.cell.mine {
+  background: color-mix(in srgb, var(--accent) 12%, var(--tile-up));
+  color: var(--accent);
+}
+
+.cell.mine.exploded {
+  background: var(--accent);
+  color: var(--card-bg);
+}
+
+/* Muted jewel number colors — fixed regardless of accent/theme */
+.cell.n1 { color: var(--n1); }
+.cell.n2 { color: var(--n2); }
+.cell.n3 { color: var(--n3); }
+.cell.n4 { color: var(--n4); }
+.cell.n5 { color: var(--n5); }
+.cell.n6 { color: var(--n6); }
+.cell.n7 { color: var(--n7); }
+.cell.n8 { color: var(--n8); }
+
+/* ---------- CONTROLS ---------- */
+.controls {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.controls button {
+  flex: 1;
+  padding: 11px 14px;
+  font-size: 0.62rem;
+  font-family: var(--sans);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--fg-muted);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s;
+}
+
+.controls button:hover {
+  color: var(--fg);
+  border-color: var(--accent);
+  box-shadow: var(--shadow-md);
+}
+
+@keyframes cellReveal {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(0.92); }
+  100% { transform: scale(1); }
+}
+
+.cell.revealed.animated { animation: cellReveal 0.1s ease; }
+
+/* ---------- DARK MODE — tile-specific tweaks only ----------
+   Colors like --bg, --fg, --border, --accent, --card-bg already
+   flip correctly via the shared [data-theme="dark"] rules in
+   Style/styles.css. Only things unique to Minesweeper's tile
+   rendering (raised shadow, number jewel tones) need overrides
+   here. */
+[data-theme="dark"] {
+  --tile-raised: 0 2px 4px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3);
+
+  --n1: #6B9FE4;
+  --n2: #82B97A;
+  --n3: #E47A7F;
+  --n4: #A98FD4;
+  --n5: #D4956B;
+  --n6: #6BC4B4;
+  --n7: #B0BAD0;
+  --n8: #8B90A8;
+}
+
+/* ---------- RESPONSIVE ----------
+   Breakpoint matches the sidebar-aware stacking breakpoint that
+   router.js applies to .game-layout, so this game restyles at
+   the same point the 3-column grid collapses to one column. */
+
+@media (max-width: 1160px) {
+  .side { border: none; border-bottom: 1px solid var(--border); }
+  .side.right { border-top: 1px solid var(--border); border-bottom: none; }
+  .left { flex-direction: row; justify-content: space-around; padding: 14px; flex-wrap: wrap; gap: 16px; }
+  .right { padding: 14px; }
+  .game-container { border: none; }
+  .board.easy { grid-template-columns: repeat(8, 25px); grid-template-rows: repeat(8, 25px); }
+  .board.easy .cell { width: 25px; height: 25px; font-size: 12px; }
+  .board.medium { grid-template-columns: repeat(16, 20px); grid-template-rows: repeat(16, 20px); }
+  .board.medium .cell { width: 20px; height: 20px; font-size: 10px; }
+}

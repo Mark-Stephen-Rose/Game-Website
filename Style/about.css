@@ -1,0 +1,383 @@
+/* ============================================================
+   ABOUT PAGE STYLES
+   Matched to markrose.dev personal site tokens.
+   Note: theme toggle + accent swatches now live in the sidebar
+   (see styles.css) — this file no longer defines them, to avoid
+   the two stylesheets fighting over the same classes.
+   ============================================================ */
+
+/* ── About Layout ─────────────────────────────────────────── */
+
+.about-wrap {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 3rem 2rem 5rem;
+}
+
+.about-hero {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 3rem;
+  padding-bottom: 2.5rem;
+  border-bottom: 1px solid var(--border);
+  animation: card-in 0.5s ease forwards;
+}
+
+.about-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent-warm));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--serif);
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #fff;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
+}
+
+.about-hero-text { flex: 1; }
+
+.about-title {
+  font-family: var(--serif);
+  font-size: 2.2rem;
+  font-weight: 600;
+  color: var(--fg);
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  margin-bottom: 0.4rem;
+}
+
+.about-tagline {
+  font-size: 0.875rem;
+  color: var(--fg-muted);
+  line-height: 1.6;
+}
+
+/* ── Sections ─────────────────────────────────────────────── */
+
+.about-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.about-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem 2rem;
+  box-shadow: var(--shadow-sm);
+  opacity: 0;
+  transform: translateY(10px);
+  animation: card-in 0.5s ease forwards;
+}
+
+.about-card:nth-child(1) { animation-delay: 0.05s; }
+.about-card:nth-child(2) { animation-delay: 0.12s; }
+.about-card:nth-child(3) { animation-delay: 0.19s; }
+.about-card:nth-child(4) { animation-delay: 0.26s; }
+.about-card:nth-child(5) { animation-delay: 0.33s; }
+
+.section-label {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent-2);
+  margin-bottom: 1rem;
+}
+
+.about-bio p {
+  font-size: 0.9rem;
+  color: var(--fg-muted);
+  line-height: 1.75;
+  margin-bottom: 0.75rem;
+}
+
+.about-bio p:last-child { margin-bottom: 0; }
+
+/* ── Mini Game List ───────────────────────────────────────── */
+
+.mini-game-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.mini-game-list li a {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--fg-muted);
+  text-decoration: none;
+  border-bottom: 1px solid var(--border-soft);
+  transition: color 0.2s;
+}
+
+.mini-game-list li:last-child a { border-bottom: none; }
+
+.mini-game-list li a:hover { color: var(--accent); }
+
+.mini-num {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  color: var(--fg-faint);
+  min-width: 1.5rem;
+}
+
+/* ── Responsive ───────────────────────────────────────────── */
+
+@media (max-width: 600px) {
+  .about-wrap { padding: 2rem 1.25rem 4rem; }
+  .about-hero { flex-direction: column; align-items: flex-start; gap: 1.25rem; }
+}
+
+/* ── Socials ──────────────────────────────────────────────── */
+
+.socials-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.social-link {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border-soft);
+  background: var(--bg);
+  text-decoration: none;
+  transition: border-color 0.2s, background 0.2s, transform 0.15s;
+}
+
+.social-link:hover {
+  border-color: var(--accent);
+  background: var(--card-bg);
+  transform: translateX(3px);
+}
+
+.social-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--fg-muted);
+  flex-shrink: 0;
+  transition: background 0.2s, color 0.2s;
+}
+
+.social-link:hover .social-icon { background: var(--accent); color: #fff; }
+
+.social-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.social-name {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--fg);
+}
+
+.social-handle {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--fg-faint);
+}
+
+.social-arrow {
+  color: var(--fg-faint);
+  flex-shrink: 0;
+  transition: color 0.2s;
+}
+
+.social-link:hover .social-arrow { color: var(--accent); }
+
+/* ── Bug Report Form ──────────────────────────────────────── */
+
+.about-bugs { scroll-margin-top: 2rem; }
+
+.bug-intro {
+  font-size: 0.85rem;
+  color: var(--fg-muted);
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-bottom: 1rem;
+}
+
+.form-group:last-of-type { margin-bottom: 0; }
+
+.form-label {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+
+.form-optional {
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--fg-faint);
+}
+
+.form-select-wrap {
+  position: relative;
+}
+
+.form-select {
+  width: 100%;
+  appearance: none;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.65rem 2.25rem 0.65rem 0.85rem;
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  color: var(--fg);
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.form-select:focus { outline: none; border-color: var(--accent); }
+
+.select-chevron {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--fg-faint);
+}
+
+.form-input,
+.form-textarea {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.65rem 0.85rem;
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  color: var(--fg);
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+.form-textarea { resize: vertical; min-height: 100px; line-height: 1.6; }
+
+.form-input:focus,
+.form-textarea:focus { outline: none; border-color: var(--accent); }
+
+.form-input::placeholder,
+.form-textarea::placeholder { color: var(--fg-faint); }
+
+.bug-submit {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+  padding: 0.7rem 1.4rem;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 100px;
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+}
+
+.bug-submit:hover { opacity: 0.85; transform: translateY(-1px); }
+.bug-submit:active { transform: translateY(0); }
+
+.bug-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1rem;
+  text-align: center;
+  gap: 0.5rem;
+}
+
+.bug-success-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.bug-success-title {
+  font-family: var(--serif);
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--fg);
+}
+
+.bug-success-sub {
+  font-size: 0.85rem;
+  color: var(--fg-muted);
+}
+
+.bug-reset {
+  margin-top: 0.75rem;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 0.45rem 1.1rem;
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--fg-muted);
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.bug-reset:hover { border-color: var(--accent); color: var(--accent); }
+
+@media (max-width: 500px) {
+  .form-row { grid-template-columns: 1fr; }
+}
