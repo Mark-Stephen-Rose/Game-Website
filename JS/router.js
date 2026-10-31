@@ -743,6 +743,86 @@ const GAMES = {
 </div>`
   },
 
+  sokoban: {
+    title: "Sokoban",
+    css: "Style/sokoban.css",
+    scripts: ["JS/sokoban.js"],
+    render: () => `
+<div class="sk-wrap">
+  <header class="t-header">
+    <a class="t-back" href="index.html">
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      Games
+    </a>
+    <div class="t-title-block">
+      <span class="t-eyebrow" id="levelName">Push &amp; Plan</span>
+      <h1 class="t-title">Sokoban</h1>
+    </div>
+    <div class="t-header-spacer"></div>
+  </header>
+  <div class="t-layout">
+    <aside class="t-panel t-panel-left">
+      <div class="stat-block"><div class="stat-label">Level</div><div class="stat-value" id="levelNum">1/10</div></div>
+      <div class="stat-block"><div class="stat-label">Moves</div><div class="stat-value" id="moves">0</div></div>
+      <div class="stat-block"><div class="stat-label">Pushes</div><div class="stat-value" id="pushes">0</div></div>
+      <div class="stat-block"><div class="stat-label">Best</div><div class="stat-value" id="best">—</div></div>
+    </aside>
+    <div class="sk-board-wrap" id="boardWrap">
+      <canvas id="board" tabindex="0" role="img" aria-label="Sokoban board"></canvas>
+      <div class="t-overlay" id="overlayStart">
+        <div class="overlay-inner">
+          <div class="overlay-title">Sokoban</div>
+          <div class="overlay-sub" id="startSub">Push every crate onto a goal. You can push, but never pull.</div>
+          <button class="t-btn" id="btnStart">Start Game</button>
+          <div class="overlay-keys">
+            <span>← ↑ → ↓ or W A S D Move</span><span>Z Undo</span>
+            <span>R Restart</span><span>L Levels</span>
+          </div>
+        </div>
+      </div>
+      <div class="t-overlay hidden" id="overlayLevels">
+        <div class="overlay-inner">
+          <div class="overlay-title">Levels</div>
+          <div class="level-grid" id="levelGrid"></div>
+          <button class="t-ghost-btn" id="btnLevelsClose">Close</button>
+        </div>
+      </div>
+      <div class="t-overlay hidden" id="overlayWin">
+        <div class="overlay-inner">
+          <div class="overlay-title" id="winTitle">Level Complete</div>
+          <div class="overlay-score" id="winStats"></div>
+          <div class="overlay-actions">
+            <button class="t-btn" id="btnNext">Next Level</button>
+            <button class="t-ghost-btn" id="btnReplay">Replay</button>
+            <button class="t-ghost-btn" id="btnWinLevels">Level Select</button>
+            <a class="t-exit" href="index.html">← Back to Games</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <aside class="t-panel t-panel-right">
+      <div class="ctrl-block">
+        <button class="t-ctrl-btn" id="btnUndo" disabled>Undo</button>
+        <button class="t-ctrl-btn" id="btnRestart">Restart</button>
+        <button class="t-ctrl-btn" id="btnLevels">Levels</button>
+      </div>
+      <div class="key-hint">
+        <span class="kh-row"><kbd>Z</kbd> undo</span>
+        <span class="kh-row"><kbd>R</kbd> restart</span>
+        <span class="kh-row"><kbd>L</kbd> levels</span>
+      </div>
+      <div class="dpad">
+        <button class="dpad-btn dpad-up" id="dUp" aria-label="Move up">▲</button>
+        <button class="dpad-btn dpad-left" id="dLeft" aria-label="Move left">◀</button>
+        <button class="dpad-btn dpad-right" id="dRight" aria-label="Move right">▶</button>
+        <button class="dpad-btn dpad-down" id="dDown" aria-label="Move down">▼</button>
+      </div>
+    </aside>
+  </div>
+  <p class="visually-hidden" id="srStatus" role="status" aria-live="polite"></p>
+</div>`
+  },
+
   pinball: {
     title: "Pinball",
     css: "Style/pinball.css",
@@ -927,8 +1007,8 @@ function injectLayoutShim(game) {
 
 // ── Main router ──────────────────────────────────────────────
 async function route() {
-  // The route is read once, in index.html (#chess style links, same as the personal site).
-  const gameKey = (window.__siteRoute || {}).game;
+  const params  = new URLSearchParams(window.location.search);
+  const gameKey = params.get('game');
   const appEl   = document.getElementById('app');
 
   if (!gameKey || !GAMES[gameKey]) return;
@@ -966,4 +1046,7 @@ async function route() {
 // Run on load
 route();
 
-// Back/forward is handled for every page by the route script in index.html.
+// Handle browser back/forward
+window.addEventListener('popstate', () => {
+  window.location.reload();
+});

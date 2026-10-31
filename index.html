@@ -38,11 +38,11 @@
         <span class="sidebar-section-label">Categories</span>
         <button type="button" class="sidebar-link" data-category="all">
           <span class="sidebar-link-text">All Games</span>
-          <span class="sidebar-link-count">11</span>
+          <span class="sidebar-link-count">12</span>
         </button>
         <button type="button" class="sidebar-link" data-category="board">
           <span class="sidebar-link-text">Board Games</span>
-          <span class="sidebar-link-count">6</span>
+          <span class="sidebar-link-count">7</span>
         </button>
         <button type="button" class="sidebar-link" data-category="cards">
           <span class="sidebar-link-text">Card Games</span>
@@ -80,11 +80,11 @@
       <div class="sidebar-divider"></div>
 
       <div class="sidebar-footer-links">
-        <a class="sidebar-link sidebar-link--ghost" href="#about">
+        <a class="sidebar-link sidebar-link--ghost" href="?page=about">
           <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
           <span class="sidebar-link-text">About Mark</span>
         </a>
-        <a class="sidebar-link sidebar-link--ghost" href="#bug-report">
+        <a class="sidebar-link sidebar-link--ghost" href="?page=about#bug-report">
           <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg>
           <span class="sidebar-link-text">Report a Bug</span>
         </a>
@@ -115,22 +115,23 @@
       <section class="home-about-blurb">
         <span class="section-label">About</span>
         <p>Just someone who likes making small, browser-based games in their spare time. These aren't masterpieces — they're experiments, time-killers, and an excuse to write more JavaScript than is strictly necessary.</p>
-        <p>Started in 2025 with a few classics, kept going. Pick a category on the left to see what's playable, or head to the <a href="#about">About page</a> for the full story, appearance settings, and a way to report bugs.</p>
+        <p>Started in 2025 with a few classics, kept going. Pick a category on the left to see what's playable, or head to the <a href="?page=about">About page</a> for the full story, appearance settings, and a way to report bugs.</p>
       </section>
 
       <section class="category-section" id="category-board" style="display:none">
         <div class="category-header">
           <span class="category-label">Board Games</span>
           <h2 class="category-title">Strategy &amp; Classics</h2>
-          <span class="category-count">6 games</span>
+          <span class="category-count">7 games</span>
         </div>
         <div class="game-grid">
-          <a class="game-card" href="#tictactoe" style="--delay:0.05s"><div class="card-number">01</div><div class="card-img-wrap"><img src="Images/tictactoe.png" alt="Tic Tac Toe screenshot"></div><div class="card-info"><h2 class="card-title">Tic Tac Toe</h2><p class="card-desc">X marks the spot. Or O does. One of them wins eventually.</p><div class="card-cta">Begin Session <span class="arrow">→</span></div></div></a>
-          <a class="game-card" href="#connectfour" style="--delay:0.15s"><div class="card-number">02</div><div class="card-img-wrap"><img src="Images/connectfour.png" alt="Connect Four screenshot"></div><div class="card-info"><h2 class="card-title">Connect Four</h2><p class="card-desc">Drop. Connect. Repeat. Try not to lose to yourself.</p><div class="card-cta">Start a Match <span class="arrow">→</span></div></div></a>
-          <a class="game-card" href="#minesweeper" style="--delay:0.25s"><div class="card-number">03</div><div class="card-img-wrap"><img src="Images/minesweeper.png" alt="Minesweeper screenshot"></div><div class="card-info"><h2 class="card-title">Minesweeper</h2><p class="card-desc">Logic puzzle or pure guessing? Yes.</p><div class="card-cta">Open the Field <span class="arrow">→</span></div></div></a>
-          <a class="game-card" href="#chess" style="--delay:0.35s"><div class="card-number">04</div><div class="card-img-wrap"><img src="Images/chess.png" alt="Chess screenshot"></div><div class="card-info"><h2 class="card-title">Chess</h2><p class="card-desc">The ancient game of kings. Play a friend or challenge the bot — Beginner to Master.</p><div class="card-cta">Make Your Move <span class="arrow">→</span></div></div></a>
-          <a class="game-card" href="#checkers" style="--delay:0.45s"><div class="card-number">05</div><div class="card-img-wrap"><img src="Images/checkers.png" alt="Checkers screenshot"></div><div class="card-info"><h2 class="card-title">Checkers</h2><p class="card-desc">Jump, capture, and crown your kings. Play a friend or take on the AI.</p><div class="card-cta">Make a Move <span class="arrow">→</span></div></div></a>
-          <a class="game-card" href="#sudoku" style="--delay:0.55s"><div class="card-number">06</div><div class="card-img-wrap"><img src="Images/sudoku.png" alt="Sudoku screenshot"></div><div class="card-info"><h2 class="card-title">Sudoku</h2><p class="card-desc">Fill the grid. No repeats. Four difficulty levels — Easy to Expert.</p><div class="card-cta">Start Solving <span class="arrow">→</span></div></div></a>
+          <a class="game-card" href="?game=tictactoe" style="--delay:0.05s"><div class="card-number">01</div><div class="card-img-wrap"><img src="Images/tictactoe.png" alt="Tic Tac Toe screenshot"></div><div class="card-info"><h2 class="card-title">Tic Tac Toe</h2><p class="card-desc">X marks the spot. Or O does. One of them wins eventually.</p><div class="card-cta">Begin Session <span class="arrow">→</span></div></div></a>
+          <a class="game-card" href="?game=connectfour" style="--delay:0.15s"><div class="card-number">02</div><div class="card-img-wrap"><img src="Images/connectfour.png" alt="Connect Four screenshot"></div><div class="card-info"><h2 class="card-title">Connect Four</h2><p class="card-desc">Drop. Connect. Repeat. Try not to lose to yourself.</p><div class="card-cta">Start a Match <span class="arrow">→</span></div></div></a>
+          <a class="game-card" href="?game=minesweeper" style="--delay:0.25s"><div class="card-number">03</div><div class="card-img-wrap"><img src="Images/minesweeper.png" alt="Minesweeper screenshot"></div><div class="card-info"><h2 class="card-title">Minesweeper</h2><p class="card-desc">Logic puzzle or pure guessing? Yes.</p><div class="card-cta">Open the Field <span class="arrow">→</span></div></div></a>
+          <a class="game-card" href="?game=chess" style="--delay:0.35s"><div class="card-number">04</div><div class="card-img-wrap bj-card-img" style="background:#1a1a2e"><div class="bj-card-icon">♟</div></div><div class="card-info"><h2 class="card-title">Chess</h2><p class="card-desc">The ancient game of kings. Play a friend or challenge the bot — Beginner to Master.</p><div class="card-cta">Make Your Move <span class="arrow">→</span></div></div></a>
+          <a class="game-card" href="?game=checkers" style="--delay:0.45s"><div class="card-number">05</div><div class="card-img-wrap bj-card-img" style="background:#b58863"><div class="bj-card-icon">🔴</div></div><div class="card-info"><h2 class="card-title">Checkers</h2><p class="card-desc">Jump, capture, and crown your kings. Play a friend or take on the AI.</p><div class="card-cta">Make a Move <span class="arrow">→</span></div></div></a>
+          <a class="game-card" href="?game=sudoku" style="--delay:0.55s"><div class="card-number">06</div><div class="card-img-wrap bj-card-img" style="background:#2c3e50"><div class="bj-card-icon">🔢</div></div><div class="card-info"><h2 class="card-title">Sudoku</h2><p class="card-desc">Fill the grid. No repeats. Four difficulty levels — Easy to Expert.</p><div class="card-cta">Start Solving <span class="arrow">→</span></div></div></a>
+          <a class="game-card" href="?game=sokoban" style="--delay:0.65s"><div class="card-number">07</div><div class="card-img-wrap bj-card-img" style="background:#5b4630"><div class="bj-card-icon">📦</div></div><div class="card-info"><h2 class="card-title">Sokoban</h2><p class="card-desc">Push crates onto goals, one careful shove at a time. Ten levels, plus undo for when you wedge one in a corner.</p><div class="card-cta">Start Pushing <span class="arrow">→</span></div></div></a>
         </div>
       </section>
 
@@ -141,8 +142,8 @@
           <span class="category-count">2 games</span>
         </div>
         <div class="game-grid">
-          <a class="game-card" href="#blackjack" style="--delay:0.05s"><div class="card-number">07</div><div class="card-img-wrap"><img src="Images/blackjack.png" alt="Blackjack screenshot"></div><div class="card-info"><h2 class="card-title">Blackjack</h2><p class="card-desc">Hit or stand. Beat the dealer. Try not to bust on a 16.</p><div class="card-cta">Take a Seat <span class="arrow">→</span></div></div></a>
-          <a class="game-card" href="#solitaire" style="--delay:0.15s"><div class="card-number">08</div><div class="card-img-wrap"><img src="Images/solitaire.png" alt="Solitaire screenshot"></div><div class="card-info"><h2 class="card-title">Solitaire</h2><p class="card-desc">Klondike. Draw 1 or 3. A classic for when you need a moment alone.</p><div class="card-cta">Deal the Cards <span class="arrow">→</span></div></div></a>
+          <a class="game-card" href="?game=blackjack" style="--delay:0.05s"><div class="card-number">08</div><div class="card-img-wrap bj-card-img"><div class="bj-card-icon">🃏</div></div><div class="card-info"><h2 class="card-title">Blackjack</h2><p class="card-desc">Hit or stand. Beat the dealer. Try not to bust on a 16.</p><div class="card-cta">Take a Seat <span class="arrow">→</span></div></div></a>
+          <a class="game-card" href="?game=solitaire" style="--delay:0.15s"><div class="card-number">09</div><div class="card-img-wrap bj-card-img" style="background:#1e4d38"><div class="bj-card-icon">♠</div></div><div class="card-info"><h2 class="card-title">Solitaire</h2><p class="card-desc">Klondike. Draw 1 or 3. A classic for when you need a moment alone.</p><div class="card-cta">Deal the Cards <span class="arrow">→</span></div></div></a>
         </div>
       </section>
 
@@ -153,9 +154,9 @@
           <span class="category-count">3 games</span>
         </div>
         <div class="game-grid">
-          <a class="game-card" href="#tetris" style="--delay:0.05s"><div class="card-number">09</div><div class="card-img-wrap"><img src="Images/tetris.png" alt="Tetris screenshot"></div><div class="card-info"><h2 class="card-title">Tetris</h2><p class="card-desc">Stack the blocks. Clear the lines. Don't let it reach the top.</p><div class="card-cta">Start Stacking <span class="arrow">→</span></div></div></a>
-          <a class="game-card" href="#pacman" style="--delay:0.15s"><div class="card-number">10</div><div class="card-img-wrap"><img src="Images/pacman.png" alt="Pac-Man screenshot"></div><div class="card-info"><h2 class="card-title">Pac-Man</h2><p class="card-desc">Eat the dots. Dodge the ghosts. Turn the tables with a power pellet.</p><div class="card-cta">Start Chomping <span class="arrow">→</span></div></div></a>
-          <a class="game-card" href="#pinball" style="--delay:0.25s"><div class="card-number">11</div><div class="card-img-wrap"><img src="Images/pinball.png" alt="Pinball screenshot"></div><div class="card-info"><h2 class="card-title">Pinball</h2><p class="card-desc">Classic arcade pinball. Bumpers, ramps, multiball, and a whole lot of tilt.</p><div class="card-cta">Pull the Plunger <span class="arrow">→</span></div></div></a>
+          <a class="game-card" href="?game=tetris" style="--delay:0.05s"><div class="card-number">10</div><div class="card-img-wrap bj-card-img" style="background:#0a1628"><div class="bj-card-icon">🟦</div></div><div class="card-info"><h2 class="card-title">Tetris</h2><p class="card-desc">Stack the blocks. Clear the lines. Don't let it reach the top.</p><div class="card-cta">Start Stacking <span class="arrow">→</span></div></div></a>
+          <a class="game-card" href="?game=pacman" style="--delay:0.15s"><div class="card-number">11</div><div class="card-img-wrap bj-card-img" style="background:#000"><div class="bj-card-icon">🟡</div></div><div class="card-info"><h2 class="card-title">Pac-Man</h2><p class="card-desc">Eat the dots. Dodge the ghosts. Turn the tables with a power pellet.</p><div class="card-cta">Start Chomping <span class="arrow">→</span></div></div></a>
+          <a class="game-card" href="?game=pinball" style="--delay:0.25s"><div class="card-number">12</div><div class="card-img-wrap bj-card-img" style="background:#1a0a00"><div class="bj-card-icon">🎰</div></div><div class="card-info"><h2 class="card-title">Pinball</h2><p class="card-desc">Classic arcade pinball. Bumpers, ramps, multiball, and a whole lot of tilt.</p><div class="card-cta">Pull the Plunger <span class="arrow">→</span></div></div></a>
         </div>
       </section>
 
@@ -200,7 +201,7 @@
           <section class="about-card">
             <h2 class="section-label">By the Numbers</h2>
             <div class="about-stats">
-              <div class="stat-item"><span class="stat-value">11</span><span class="stat-label">Games</span></div>
+              <div class="stat-item"><span class="stat-value">12</span><span class="stat-label">Games</span></div>
               <div class="stat-item"><span class="stat-value">3</span><span class="stat-label">Categories</span></div>
               <div class="stat-item"><span class="stat-value">'25</span><span class="stat-label">Since</span></div>
             </div>
@@ -208,17 +209,18 @@
           <section class="about-card about-games-list">
             <h2 class="section-label">Games</h2>
             <ul class="mini-game-list">
-              <li><a href="#tictactoe"><span class="mini-num">01</span> Tic Tac Toe <span class="game-category">Board</span></a></li>
-              <li><a href="#connectfour"><span class="mini-num">02</span> Connect Four <span class="game-category">Board</span></a></li>
-              <li><a href="#minesweeper"><span class="mini-num">03</span> Minesweeper <span class="game-category">Board</span></a></li>
-              <li><a href="#chess"><span class="mini-num">04</span> Chess <span class="game-category">Board</span></a></li>
-              <li><a href="#checkers"><span class="mini-num">05</span> Checkers <span class="game-category">Board</span></a></li>
-              <li><a href="#sudoku"><span class="mini-num">06</span> Sudoku <span class="game-category">Board</span></a></li>
-              <li><a href="#blackjack"><span class="mini-num">07</span> Blackjack <span class="game-category">Card</span></a></li>
-              <li><a href="#solitaire"><span class="mini-num">08</span> Solitaire <span class="game-category">Card</span></a></li>
-              <li><a href="#tetris"><span class="mini-num">09</span> Tetris <span class="game-category">Arcade</span></a></li>
-              <li><a href="#pacman"><span class="mini-num">10</span> Pac-Man <span class="game-category">Arcade</span></a></li>
-              <li><a href="#pinball"><span class="mini-num">11</span> Pinball <span class="game-category">Arcade</span></a></li>
+              <li><a href="?game=tictactoe"><span class="mini-num">01</span> Tic Tac Toe <span class="game-category">Board</span></a></li>
+              <li><a href="?game=connectfour"><span class="mini-num">02</span> Connect Four <span class="game-category">Board</span></a></li>
+              <li><a href="?game=minesweeper"><span class="mini-num">03</span> Minesweeper <span class="game-category">Board</span></a></li>
+              <li><a href="?game=chess"><span class="mini-num">04</span> Chess <span class="game-category">Board</span></a></li>
+              <li><a href="?game=checkers"><span class="mini-num">05</span> Checkers <span class="game-category">Board</span></a></li>
+              <li><a href="?game=sudoku"><span class="mini-num">06</span> Sudoku <span class="game-category">Board</span></a></li>
+              <li><a href="?game=sokoban"><span class="mini-num">07</span> Sokoban <span class="game-category">Board</span></a></li>
+              <li><a href="?game=blackjack"><span class="mini-num">08</span> Blackjack <span class="game-category">Card</span></a></li>
+              <li><a href="?game=solitaire"><span class="mini-num">09</span> Solitaire <span class="game-category">Card</span></a></li>
+              <li><a href="?game=tetris"><span class="mini-num">10</span> Tetris <span class="game-category">Arcade</span></a></li>
+              <li><a href="?game=pacman"><span class="mini-num">11</span> Pac-Man <span class="game-category">Arcade</span></a></li>
+              <li><a href="?game=pinball"><span class="mini-num">12</span> Pinball <span class="game-category">Arcade</span></a></li>
             </ul>
           </section>
 
@@ -276,6 +278,7 @@
                       <option value="chess">Chess</option>
                       <option value="checkers">Checkers</option>
                       <option value="sudoku">Sudoku</option>
+                      <option value="sokoban">Sokoban</option>
                       <option value="blackjack">Blackjack</option>
                       <option value="solitaire">Solitaire</option>
                       <option value="tetris">Tetris</option>
@@ -445,56 +448,6 @@ function resetBugForm() {
 })();
 </script>
 
-<!-- ROUTE: the single place that reads the URL. Links use #hash, the same as the
-     personal site (/#chess, /#about). Once read, the address bar is tidied to the
-     clean path and the route is kept in history.state, so reload and Back/Forward
-     still restore it. Old ?game= / ?page= / ?category= links keep working. -->
-<script>
-(function () {
-  var GAME_KEYS = ['tictactoe', 'connectfour', 'minesweeper', 'chess', 'checkers', 'sudoku',
-                   'blackjack', 'solitaire', 'tetris', 'pacman', 'pinball'];
-  var CATEGORIES = ['all', 'board', 'cards', 'arcade'];
-  var cleanPath = location.pathname.replace(/index\.html$/, '');
-
-  function fromId(id) {
-    if (GAME_KEYS.indexOf(id) !== -1) return { game: id };
-    if (id === 'about') return { page: 'about' };
-    if (id === 'bug-report') return { page: 'about', anchor: 'bug-report' };
-    if (CATEGORIES.indexOf(id) !== -1) return { category: id };
-    return {};   // '#home' or anything unknown -> home page
-  }
-
-  function readRoute() {
-    if (location.hash.length > 1) {
-      var id = location.hash.slice(1);
-      try { id = decodeURIComponent(id); } catch (e) { /* keep raw id */ }
-      return fromId(id);
-    }
-    if (history.state && history.state.route) return history.state.route;
-
-    var q = new URLSearchParams(location.search);          // legacy query-string links
-    if (GAME_KEYS.indexOf(q.get('game')) !== -1) return { game: q.get('game') };
-    if (q.get('page') === 'about') return { page: 'about' };
-    if (CATEGORIES.indexOf(q.get('category')) !== -1) return { category: q.get('category') };
-    return {};
-  }
-
-  var route = readRoute();
-  window.__siteRoute = route;
-  try { history.replaceState({ route: route }, '', cleanPath); } catch (e) { /* e.g. file:// */ }
-
-  // Someone clicks a #hash link (or pastes one into a tab that already has the site open).
-  window.addEventListener('hashchange', function () {
-    if (location.hash) location.reload();
-  });
-
-  // Back / Forward between clean-URL entries: the page has to redraw for the stored route.
-  window.addEventListener('popstate', function () {
-    if (!location.hash) location.reload();
-  });
-})();
-</script>
-
 <!-- SIDEBAR: category toggling, "All Games", logo-home, and mobile drawer -->
 <script>
 (function () {
@@ -519,13 +472,13 @@ function resetBugForm() {
     });
   }
 
-  // True only when we're on the home page (no game or About page
-  // in the current route) — the category sections only exist inside
+  // True only when we're on the home page (no ?game= or ?page=
+  // in the URL) — the category sections only exist inside
   // #page-home, so that's the only page where toggling them
   // in place actually does anything visible.
   function isOnHomePage() {
-    var r = window.__siteRoute || {};
-    return !r.game && !r.page;
+    var params = new URLSearchParams(window.location.search);
+    return !params.get('game') && !params.get('page');
   }
 
   // Opens (or, for 'all', reveals) a given category's section
@@ -559,7 +512,7 @@ function resetBugForm() {
       // jump back to the home page first, and tell it which
       // category to open once it gets there.
       if (!isOnHomePage()) {
-        window.location.hash = cat;
+        window.location.href = 'index.html?category=' + encodeURIComponent(cat);
         return;
       }
 
@@ -601,8 +554,9 @@ function resetBugForm() {
   var logoBtn = document.getElementById('logoHome');
   if (logoBtn) {
     logoBtn.addEventListener('click', function () {
-      if (!isOnHomePage()) {
-        window.location.hash = 'home';
+      var params = new URLSearchParams(window.location.search);
+      if (params.get('game') || params.get('page')) {
+        window.location.href = 'index.html';
         return;
       }
       hideAllCategories();
@@ -612,7 +566,7 @@ function resetBugForm() {
   }
 
   // If arriving at the bug report anchor, scroll to it once the about page is visible
-  if ((window.__siteRoute || {}).anchor === 'bug-report') {
+  if (window.location.hash === '#bug-report') {
     setTimeout(function () {
       var el = document.getElementById('bug-report');
       if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -624,17 +578,23 @@ function resetBugForm() {
 <!-- PAGE CONTROLLER: show the right section based on URL -->
 <script>
 (function() {
-  var r = window.__siteRoute || {};
-  var game = r.game, page = r.page;
+  var p = new URLSearchParams(window.location.search);
+  var game = p.get('game'), page = p.get('page');
   var show = game ? 'page-game' : (page === 'about' ? 'page-about' : 'page-home');
   document.getElementById(show).style.display = '';
 
-  // If we landed on the home page with a category in the route
-  // (a sidebar category link clicked from inside a game or the
-  // About page, or a shared #board link), open that category now
-  // that its section is actually on screen.
-  if (show === 'page-home' && r.category && window.__marksGamesOpenCategory) {
-    window.__marksGamesOpenCategory(r.category, { instant: true });
+  // If we landed on the home page carrying a `category` param
+  // (set when a sidebar category link was clicked from inside a
+  // game or the About page), open that category now that its
+  // section is actually on screen, then tidy the URL so a refresh
+  // doesn't keep re-opening it.
+  if (show === 'page-home') {
+    var cat = p.get('category');
+    if (cat && window.__marksGamesOpenCategory) {
+      window.__marksGamesOpenCategory(cat, { instant: true });
+      var cleanUrl = window.location.pathname + (window.location.hash || '');
+      window.history.replaceState({}, document.title, cleanUrl);
+    }
   }
 
   // Load page-specific scripts

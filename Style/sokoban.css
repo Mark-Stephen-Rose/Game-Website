@@ -1,0 +1,549 @@
+/* ============================================================
+   SOKOBAN — Mark's Games Studio Edition
+   Uses Mark's Games' shared theme variables (--bg, --fg, --accent,
+   --accent-2, --sans, --serif, --card-bg, --shadow-*, etc. —
+   defined in Style/styles.css) so the game follows the site's
+   light/dark mode and accent swatch. The canvas reads the same
+   variables, so the board recolours when the theme changes.
+   Game logic adapted from Sokoban.js by Tania Rascia (MIT) —
+   see THIRD-PARTY-NOTICES.md.
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── Sokoban-only tokens ─────────────────────────────────────
+   Distinctly named so they can't collide with the site's shared
+   theme variables. */
+:root {
+  --t-radius:    14px;
+  --t-radius-lg: 20px;
+  --t-border-soft: #F2F2F2;
+}
+
+[data-theme="dark"] {
+  --t-border-soft: #1C2030;
+}
+
+/* ── Wrap ─────────────────────────────────────────────────── */
+.sk-wrap {
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: var(--sans);
+  background-color: var(--bg);
+  color: var(--fg);
+  position: relative;
+}
+
+.sk-wrap::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='0.022'/%3E%3C/svg%3E");
+  background-size: 256px 256px;
+}
+
+[data-theme="dark"] .sk-wrap::before {
+  background-image:
+    radial-gradient(ellipse at 20% 0%, color-mix(in srgb, var(--accent) 15%, transparent) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 100%, color-mix(in srgb, var(--accent-warm) 15%, transparent) 0%, transparent 60%);
+  /* the noise tile size above must not repeat the glows */
+  background-size: auto;
+}
+
+.t-header, .t-layout { position: relative; z-index: 1; }
+
+/* ── Header ───────────────────────────────────────────────── */
+.t-header {
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  height: 52px;
+  flex-shrink: 0;
+  transition: background 0.3s, border-color 0.3s;
+}
+
+.t-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+  min-width: 100px;
+}
+
+.t-back:hover { color: var(--accent); }
+
+.t-title-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+}
+
+.t-eyebrow {
+  font-family: var(--sans);
+  font-size: 0.52rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--fg-faint);
+}
+
+.t-title {
+  font-family: var(--serif);
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+}
+
+.t-header-spacer { min-width: 100px; }
+
+/* ── Layout ───────────────────────────────────────────────── */
+.t-layout {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  padding: 1rem 1.5rem;
+  overflow: hidden;
+}
+
+/* ── Panels ───────────────────────────────────────────────── */
+.t-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  width: 110px;
+  flex-shrink: 0;
+}
+
+.stat-block {
+  background: var(--card-bg);
+  border: 1px solid var(--t-border-soft);
+  border-radius: var(--t-radius);
+  padding: 0.55rem 0.75rem;
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+}
+
+.stat-label {
+  font-family: var(--sans);
+  font-size: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--fg-faint);
+  margin-bottom: 0.2rem;
+}
+
+.stat-value {
+  font-family: var(--sans);
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--fg);
+  letter-spacing: -0.02em;
+  line-height: 1;
+  word-break: break-all;
+}
+
+/* ── Controls ─────────────────────────────────────────────── */
+.ctrl-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.t-ctrl-btn {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  font-family: var(--sans);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: var(--card-bg);
+  color: var(--fg-muted);
+  border: 1px solid var(--border);
+  border-radius: var(--t-radius);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s;
+}
+
+.t-ctrl-btn:hover:not(:disabled) {
+  color: var(--accent);
+  border-color: var(--accent);
+  box-shadow: var(--shadow-md);
+}
+
+.t-ctrl-btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.t-ctrl-btn:focus-visible,
+.t-btn:focus-visible,
+.t-ghost-btn:focus-visible,
+.dpad-btn:focus-visible,
+.level-chip:focus-visible,
+.t-back:focus-visible,
+.t-exit:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.key-hint {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-top: 0.15rem;
+}
+
+.kh-row {
+  font-family: var(--sans);
+  font-size: 0.58rem;
+  color: var(--fg-faint);
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+}
+
+.kh-row kbd {
+  font-family: var(--mono);
+  font-size: 0.56rem;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.05rem 0.3rem;
+  color: var(--fg-muted);
+}
+
+/* ── Board ────────────────────────────────────────────────── */
+.sk-board-wrap {
+  position: relative;
+  flex-shrink: 0;
+  /* Room available to the canvas; JS scales the board to fit inside it */
+  --board-box: min(calc(100vh - 52px - 2rem), 560px);
+  width: var(--board-box);
+  height: var(--board-box);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@supports (height: 100dvh) {
+  .sk-board-wrap { --board-box: min(calc(100dvh - 52px - 2rem), 560px); }
+}
+
+#board {
+  display: block;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+  filter: drop-shadow(0 10px 18px rgba(43, 38, 32, 0.14));
+}
+
+[data-theme="dark"] #board {
+  filter: drop-shadow(0 8px 22px rgba(0, 0, 0, 0.5));
+}
+
+#board:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 6px;
+  border-radius: 6px;
+}
+
+/* ── Overlays ─────────────────────────────────────────────── */
+.t-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--t-radius-lg);
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: opacity 0.2s;
+}
+
+.t-overlay.hidden { display: none; }
+
+.overlay-inner {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  max-width: 100%;
+}
+
+.overlay-title {
+  font-family: var(--serif);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--fg);
+  letter-spacing: -0.02em;
+}
+
+.overlay-sub {
+  font-family: var(--sans);
+  font-size: 0.8rem;
+  color: var(--fg-muted);
+  max-width: 240px;
+  line-height: 1.6;
+}
+
+.overlay-score {
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--fg-muted);
+  letter-spacing: 0.04em;
+  line-height: 1.6;
+}
+
+.overlay-score strong {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.overlay-keys {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-top: 0.25rem;
+}
+
+.overlay-keys span {
+  font-family: var(--sans);
+  font-size: 0.62rem;
+  color: var(--fg-faint);
+  letter-spacing: 0.06em;
+}
+
+.overlay-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.t-btn {
+  padding: 0.75rem 2rem;
+  font-family: var(--sans);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--t-radius);
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.t-btn:hover {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+
+.t-btn.hidden { display: none; }
+
+.t-ghost-btn {
+  padding: 0.45rem 1rem;
+  font-family: var(--sans);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: none;
+  color: var(--fg-faint);
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.t-ghost-btn:hover { color: var(--accent); }
+
+.t-exit {
+  font-family: var(--sans);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg-faint);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.t-exit:hover { color: var(--accent); }
+
+/* ── Level select ─────────────────────────────────────────── */
+.level-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+  /* --board-box is set on .sk-board-wrap and inherited here */
+  width: min(calc(var(--board-box) - 2rem), 340px);
+}
+
+.level-chip {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  aspect-ratio: 1;
+  min-width: 0;
+  font-family: var(--sans);
+  background: var(--card-bg);
+  color: var(--fg);
+  border: 1px solid var(--border);
+  border-radius: var(--t-radius);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+
+.level-chip:hover {
+  border-color: var(--accent);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.level-chip.current {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+.level-chip-num {
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.level-chip-meta {
+  font-size: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-faint);
+}
+
+.level-chip.done .level-chip-meta { color: var(--accent); }
+
+/* ── Touch d-pad (shown on touch devices only) ────────────── */
+.dpad {
+  position: relative;
+  width: 108px;
+  height: 108px;
+  margin-top: 0.25rem;
+  display: none;
+}
+
+.dpad-btn {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.75rem;
+  color: var(--fg-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
+  transition: background 0.15s, color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.dpad-btn:active { background: var(--accent); color: #fff; }
+.dpad-up    { top: 0;   left: 36px; }
+.dpad-left  { top: 36px; left: 0; }
+.dpad-right { top: 36px; left: 72px; }
+.dpad-down  { top: 72px; left: 36px; }
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .dpad { display: block; }
+  .key-hint { display: none; }
+}
+
+/* ── Responsive ───────────────────────────────────────────── */
+@media (max-width: 700px) {
+  .t-header { padding: 0 1rem; }
+
+  .t-layout {
+    flex-direction: column;
+    align-items: center;
+    padding: 0.75rem;
+    gap: 0.75rem;
+    overflow-y: auto;
+  }
+
+  .sk-wrap { overflow: auto; }
+
+  .t-panel {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    max-width: 360px;
+    gap: 0.5rem;
+  }
+
+  .t-panel-right { align-items: flex-start; }
+
+  .stat-block { min-width: 60px; flex: 1; }
+  .ctrl-block { flex: 1; flex-direction: row; min-width: 100%; }
+  .t-ctrl-btn { flex: 1; }
+  .dpad { flex: 0 0 auto; }
+
+  .sk-board-wrap {
+    --board-box: min(calc(100vw - 1.5rem), 420px);
+  }
+
+  .overlay-title { font-size: 1.6rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .level-chip, .t-btn { transition: none; }
+}
