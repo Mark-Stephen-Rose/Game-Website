@@ -927,8 +927,8 @@ function injectLayoutShim(game) {
 
 // ── Main router ──────────────────────────────────────────────
 async function route() {
-  const params  = new URLSearchParams(window.location.search);
-  const gameKey = params.get('game');
+  // The route is read once, in index.html (#chess style links, same as the personal site).
+  const gameKey = (window.__siteRoute || {}).game;
   const appEl   = document.getElementById('app');
 
   if (!gameKey || !GAMES[gameKey]) return;
@@ -966,7 +966,4 @@ async function route() {
 // Run on load
 route();
 
-// Handle browser back/forward
-window.addEventListener('popstate', () => {
-  window.location.reload();
-});
+// Back/forward is handled for every page by the route script in index.html.
