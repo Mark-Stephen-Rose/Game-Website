@@ -2,10 +2,6 @@
    SOKOBAN — Mark's Games Studio Edition
    Features: 10 levels, undo, move/push counters, per-level best,
    level select, swipe + d-pad touch controls, theme-aware canvas.
-
-   Game logic adapted from Sokoban.js by Tania Rascia (MIT License,
-   Copyright (c) 2021 Tania Rascia) — see THIRD-PARTY-NOTICES.md.
-   Level 6 ("Loading Dock") is the original level from that project.
    ============================================================ */
 
 (function () {

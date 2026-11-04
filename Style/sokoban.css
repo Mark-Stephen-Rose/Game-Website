@@ -5,8 +5,6 @@
    defined in Style/styles.css) so the game follows the site's
    light/dark mode and accent swatch. The canvas reads the same
    variables, so the board recolours when the theme changes.
-   Game logic adapted from Sokoban.js by Tania Rascia (MIT) —
-   see THIRD-PARTY-NOTICES.md.
    ============================================================ */
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
